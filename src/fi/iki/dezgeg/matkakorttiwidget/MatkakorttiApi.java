@@ -19,6 +19,7 @@ import org.apache.http.impl.client.*;
 import org.apache.http.impl.conn.tsccm.*;
 import org.apache.http.params.*;
 import org.apache.http.protocol.*;
+import org.json.*;
 
 import android.util.*;
 
@@ -103,7 +104,8 @@ public class MatkakorttiApi
         loginForm.get(prefix + "UserName").set("dezgeg");
         loginForm.get(prefix + "Password").set("fake password");
 
-        loginForm.submit((SubmitButton)loginForm.get(prefix + "LoginButton")); // TODO: follow redirect
+        loginForm.submit((SubmitButton) loginForm.get(prefix + "LoginButton"));
+        // TODO: Follow redirects
         HtmlDocument response = agent.get("https://omamatkakortti.hsl.fi/Basic/Cards.aspx");
 
         List<HtmlElement> scripts = response.htmlElements().getAll(byTag("script"));
@@ -112,13 +114,16 @@ public class MatkakorttiApi
         for (HtmlElement script : scripts) {
             Matcher matcher = jsonPattern.matcher(script.getInnerHtml());
             if (matcher.matches()) {
-                System.out.println(matcher.group(1));
+                JSONArray cards = new JSONArray(matcher.group(1));
+                for (int i = 0; i < cards.length(); i++)
+                    System.out.println(cards.getJSONObject(i).getDouble("RemainingMoney"));
             }
         }
     }
+
     public static void main(String[] args) throws Exception
     {
         getCards();
     }
-    
+
 }
