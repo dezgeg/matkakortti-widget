@@ -11,6 +11,20 @@ public class MainMenuActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        new Thread() {
+            @Override
+            public void run()
+            {
+                try {
+                    MatkakorttiApi.getCards();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            
+        }.start();
+
         setContentView(R.layout.activity_main_menu);
     }
 
