@@ -11,6 +11,18 @@ public class HomescreenWidgetProvider extends AppWidgetProvider
 {
 
     @Override
+    public void onDisabled(Context context)
+    {
+        super.onDisabled(context);
+    }
+
+    @Override
+    public void onEnabled(Context context)
+    {
+        super.onEnabled(context);
+    }
+
+    @Override
     public void onReceive(Context context, Intent intent)
     {
         super.onReceive(context, intent);
@@ -21,18 +33,14 @@ public class HomescreenWidgetProvider extends AppWidgetProvider
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
     {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        for (int widgetId : appWidgetIds) {
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget);
-            remoteViews.setTextViewText(R.id.homescreen_text, new Date() + "");
+        ComponentName thisWidget = new ComponentName(context, HomescreenWidgetProvider.class);
 
-            Intent intent = new Intent(context, HomescreenWidgetProvider.class);
-            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+        int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+        Intent intent = new Intent(context.getApplicationContext(), WidgetUpdaterService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-            remoteViews.setOnClickPendingIntent(R.id.homescreen_text, pendingIntent);
-            appWidgetManager.updateAppWidget(widgetId, remoteViews);
-        }
+        // Update the widgets via the service
+        context.startService(intent);
     }
 
 }

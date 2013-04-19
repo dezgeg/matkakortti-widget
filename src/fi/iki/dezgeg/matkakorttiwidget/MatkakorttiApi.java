@@ -92,7 +92,7 @@ public class MatkakorttiApi
         return new DefaultHttpClient(ccm, params);
     }
 
-    public static void getCards() throws Exception
+    public static double getMoney(String username, String password) throws Exception
     {
         AbstractHttpClient httpClient = createNonverifyingHttpClient();
 
@@ -101,8 +101,8 @@ public class MatkakorttiApi
 
         Form loginForm = page.forms().get(byId("aspnetForm"));
         String prefix = "Etuile$MainContent$LoginControl$LoginForm$";
-        loginForm.get(prefix + "UserName").set("dezgeg");
-        loginForm.get(prefix + "Password").set("fake password");
+        loginForm.get(prefix + "UserName").set(username);
+        loginForm.get(prefix + "Password").set(password);
 
         loginForm.submit((SubmitButton) loginForm.get(prefix + "LoginButton"));
         // TODO: Follow redirects
@@ -115,15 +115,11 @@ public class MatkakorttiApi
             Matcher matcher = jsonPattern.matcher(script.getInnerHtml());
             if (matcher.matches()) {
                 JSONArray cards = new JSONArray(matcher.group(1));
-                for (int i = 0; i < cards.length(); i++)
-                    System.out.println(cards.getJSONObject(i).getDouble("RemainingMoney"));
+                if (cards.length() == 0)
+                    return -1;
+                return cards.getJSONObject(0).getDouble("RemainingMoney");
             }
         }
+        return -2;
     }
-
-    public static void main(String[] args) throws Exception
-    {
-        getCards();
-    }
-
 }

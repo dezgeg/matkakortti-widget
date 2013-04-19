@@ -15,22 +15,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         addPreferencesFromResource(R.xml.main_menu);
-
-        new Thread() {
-            @Override
-            public void run()
-            {
-                try {
-                    MatkakorttiApi.getCards();
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-
-        }.start();
     }
 
     @Override

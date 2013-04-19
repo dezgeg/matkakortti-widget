@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".WidgetUpdaterService"></service>
         <receiver
             android:name="HomescreenWidgetProvider"
             android:label="Matkakortti Widget" >
