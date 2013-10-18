@@ -124,7 +124,7 @@ public class MatkakorttiApi
             // - 1 since the service will always complain about our browser.
             for (int i = 0; i < errorElements.size() - 1; i++)
                 errors += errorElements.get(i).getText() + "\n";
-            throw new RuntimeException(errors);
+            throw new MatkakorttiException(errors);
         }
 
         // TODO: Follow redirects
@@ -138,10 +138,10 @@ public class MatkakorttiApi
             if (matcher.matches()) {
                 JSONArray cards = new JSONArray(matcher.group(1));
                 if (cards.length() == 0)
-                    return -1;
+                    throw new MatkakorttiException("Tunnuksella ei ole matkakortteja.");
                 return cards.getJSONObject(0).getDouble("RemainingMoney");
             }
         }
-        return -2;
+        throw new MatkakorttiException("No voi vittu");
     }
 }
