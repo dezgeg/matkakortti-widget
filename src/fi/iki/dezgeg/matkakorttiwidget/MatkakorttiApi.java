@@ -1,32 +1,43 @@
 package fi.iki.dezgeg.matkakorttiwidget;
 
-import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.*;
+import com.gistlabs.mechanize.MechanizeAgent;
+import com.gistlabs.mechanize.document.Document;
+import com.gistlabs.mechanize.document.html.HtmlDocument;
+import com.gistlabs.mechanize.document.html.HtmlElement;
+import com.gistlabs.mechanize.document.html.form.Form;
+import com.gistlabs.mechanize.document.html.form.SubmitButton;
 
-import java.io.*;
-import java.net.*;
-import java.security.*;
-import java.security.cert.*;
-import java.util.*;
-import java.util.regex.*;
-
-import javax.net.ssl.*;
-
-import org.apache.http.*;
-import org.apache.http.conn.*;
-import org.apache.http.conn.scheme.*;
+import org.apache.http.HttpVersion;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.*;
-import org.apache.http.impl.conn.tsccm.*;
-import org.apache.http.params.*;
-import org.apache.http.protocol.*;
-import org.json.*;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
 
-import android.util.*;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.gistlabs.mechanize.*;
-import com.gistlabs.mechanize.document.*;
-import com.gistlabs.mechanize.document.html.*;
-import com.gistlabs.mechanize.document.html.form.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byId;
+import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byTag;
 
 public class MatkakorttiApi
 {
@@ -104,11 +115,22 @@ public class MatkakorttiApi
         loginForm.get(prefix + "UserName").set(username);
         loginForm.get(prefix + "Password").set(password);
 
-        loginForm.submit((SubmitButton) loginForm.get(prefix + "LoginButton"));
+        HtmlDocument loginResponse = loginForm.submit((SubmitButton) loginForm.get(prefix + "LoginButton"));
+        HtmlElement validationSummary = loginResponse.htmlElements().get(byId("Etuile_mainValidationSummary"));
+
+        if (validationSummary != null) {
+            List<HtmlElement> errorElements = validationSummary.get(byTag("ul")).getAll(byTag("li"));
+            String errors = "";
+            // - 1 since the service will always complain about our browser.
+            for (int i = 0; i < errorElements.size() - 1; i++)
+                errors += errorElements.get(i).getText() + "\n";
+            throw new RuntimeException(errors);
+        }
+
         // TODO: Follow redirects
         HtmlDocument response = agent.get("https://omamatkakortti.hsl.fi/Basic/Cards.aspx");
-
         List<HtmlElement> scripts = response.htmlElements().getAll(byTag("script"));
+
         Pattern jsonPattern = Pattern.compile(".*?parseJSON\\('(.*)'\\).*", Pattern.DOTALL);
 
         for (HtmlElement script : scripts) {
