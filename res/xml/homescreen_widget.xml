@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/homescreen_widget"
-    android:minHeight="72dp"
-    android:minWidth="72dp">
-</appwidget-provider> 
+    android:minHeight="36.0dip"
+    android:minWidth="36.0dip">
+</appwidget-provider>

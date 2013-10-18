@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/homescreen_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="8dip">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/homescreen_text"
@@ -11,7 +10,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center_horizontal|center_vertical"
-        android:layout_margin="4dip"
         android:background="#000000"
         android:textSize="24sp"
         android:text=""
