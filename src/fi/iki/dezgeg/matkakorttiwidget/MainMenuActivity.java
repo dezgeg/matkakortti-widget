@@ -9,7 +9,7 @@ import android.view.Menu;
 
 public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-    private static final String[] PREF_KEYS = new String[] { "username" };
+    private static final String[] PREF_KEYS = new String[] { "username", "password" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,7 +45,14 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
     {
-        if (key.equals("username")) {
+        if (key.equals("password")) {
+            String password = prefs.getString(key, "");
+            String masked = "";
+            for (int i = 0; i < password.length(); i++)
+                masked += "*";
+
+            findPreference(key).setSummary(masked);
+        } else {
             findPreference(key).setSummary(prefs.getString(key, ""));
         }
     }
