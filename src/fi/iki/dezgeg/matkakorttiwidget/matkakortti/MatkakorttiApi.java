@@ -21,6 +21,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
@@ -39,9 +40,9 @@ public class MatkakorttiApi
     private String username;
     private String password;
 
-    public MatkakorttiApi(String password, String username) {
-        this.password = password;
+    public MatkakorttiApi(String username, String password) {
         this.username = username;
+        this.password = password;
     }
 
     public Card getCard() throws Exception
@@ -77,17 +78,22 @@ public class MatkakorttiApi
         for (HtmlElement script : scripts) {
             Matcher matcher = jsonPattern.matcher(script.getInnerHtml());
             if (matcher.matches()) {
-                JSONArray cards = new JSONArray(matcher.group(1));
-                if (cards.length() == 0)
-                    throw new MatkakorttiException("Tunnuksella ei ole matkakortteja.");
-
-                JSONObject card = cards.getJSONObject(0);
-                double moneyAsDouble = card.getDouble("RemainingMoney");
-                // Ronud to BigDecimal cents safely
-                BigDecimal money = new BigDecimal((int)Math.round(100 * moneyAsDouble)).divide(new BigDecimal(100));
-                return new Card(card.getString("name"), card.getString("id"), money);
+                return createCardFromJSON(matcher.group(1));
             }
         }
         throw new MatkakorttiException("No voi vittu");
+    }
+
+    private Card createCardFromJSON(String json) throws JSONException {
+        JSONArray cards = new JSONArray(json);
+        if (cards.length() == 0)
+            throw new MatkakorttiException("Tunnuksella ei ole matkakortteja.");
+
+        JSONObject card = cards.getJSONObject(0);
+        double moneyAsDouble = card.getDouble("RemainingMoney");
+
+        // Round to BigDecimal cents safely
+        BigDecimal money = new BigDecimal((int)Math.round(100 * moneyAsDouble)).divide(new BigDecimal(100));
+        return new Card(card.getString("name"), card.getString("id"), money);
     }
 }

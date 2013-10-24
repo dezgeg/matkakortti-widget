@@ -17,12 +17,12 @@
       <config />
     </shared>
   </component>
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="App" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="ee6bf092-d636-4689-b8ae-13394862021e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/Card.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/MatkakorttiApi.java" afterPath="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/MatkakorttiApi.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/WidgetUpdaterService.java" afterPath="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/WidgetUpdaterService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="MatkakorttiWidget.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -132,7 +132,7 @@
       <file leaf-file-name="MatkakorttiApi.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/MatkakorttiApi.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="65" column="60" selection-start="2757" selection-end="2757" vertical-scroll-proportion="0.6164383" vertical-offset="0" max-vertical-offset="1005">
+            <state line="92" column="42" selection-start="3856" selection-end="3856" vertical-scroll-proportion="0.7758406" vertical-offset="262" max-vertical-offset="1080">
               <folding />
             </state>
           </provider>
@@ -207,9 +207,9 @@
         <option value="$PROJECT_DIR$/res/layout/homescreen_widget.xml" />
         <option value="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/MatkakorttiApi.java" />
         <option value="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/NonverifyingSSLSocketFactory.java" />
-        <option value="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/MatkakorttiApi.java" />
         <option value="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/WidgetUpdaterService.java" />
         <option value="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/Card.java" />
+        <option value="$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/MatkakorttiApi.java" />
       </list>
     </option>
   </component>
@@ -688,7 +688,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/fi/iki/dezgeg/matkakorttiwidget/matkakortti/MatkakorttiApi.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="60" selection-start="2757" selection-end="2757" vertical-scroll-proportion="0.6164383" vertical-offset="0" max-vertical-offset="1005">
+        <state line="92" column="42" selection-start="3856" selection-end="3856" vertical-scroll-proportion="0.7758406" vertical-offset="262" max-vertical-offset="1080">
           <folding />
         </state>
       </provider>
