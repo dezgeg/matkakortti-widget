@@ -76,11 +76,6 @@ public class MatkakorttiApi
         throw new MatkakorttiException("No voi vittu");
     }
 
-    public Card getCard() throws Exception
-    {
-        return getCards().get(1);
-    }
-
     private Card createCardFromJSON(JSONObject card) throws JSONException {
         double moneyAsDouble = card.getDouble("RemainingMoney");
         // Round to BigDecimal cents safely

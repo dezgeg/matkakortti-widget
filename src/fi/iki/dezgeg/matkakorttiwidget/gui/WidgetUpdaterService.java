@@ -36,13 +36,23 @@ public class WidgetUpdaterService extends IntentService
         String username = prefs.getString("username", "<not set>");
         String password = prefs.getString("password", "");
 
-        String message;
+        String message = "";
         boolean isError = false;
+        boolean anyCards = false;
         try {
-            Card card = new MatkakorttiApi(username, password).getCard();
-            message = card.getMoney() + "";
-            if (card.getPeriodExpiryDate() != null)
-                message += "\n" + new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate());
+            for (Card card : new MatkakorttiApi(username, password).getCards()) {
+                if (!prefs.getBoolean("cardSelected_" + card.getId(), false))
+                    continue;
+
+                message = card.getMoney() + "";
+                if (card.getPeriodExpiryDate() != null)
+                    message += "\n" + new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate());
+                anyCards = true;
+            }
+            if (!anyCards) {
+                isError = true;
+                message = "No cards selected!";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             message = e.getMessage();
