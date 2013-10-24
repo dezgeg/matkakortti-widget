@@ -12,7 +12,6 @@ import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import java.text.SimpleDateFormat;
-import java.util.Timer;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
 import fi.iki.dezgeg.matkakorttiwidget.gui.HomescreenWidgetProvider;
@@ -21,7 +20,6 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 
 public class WidgetUpdaterService extends IntentService
 {
-    private Timer timer = new Timer();
     public WidgetUpdaterService()
     {
         super("MatkakorttiWidgetUpdaterService");
@@ -29,7 +27,7 @@ public class WidgetUpdaterService extends IntentService
     @Override
     public void onHandleIntent(Intent source)
     {
-        System.out.println("onHandleIntent");
+        System.out.println("onHandleIntent: " + source.toString());
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
         int[] appWidgetIds = source.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
