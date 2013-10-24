@@ -69,11 +69,10 @@ public class WidgetUpdaterService extends IntentService
                 remoteViews.setTextColor(R.id.homescreen_text, Color.WHITE);
                 remoteViews.setTextViewTextSize(R.id.homescreen_text, TypedValue.COMPLEX_UNIT_PT, 12.0f);
             }
-            Intent intent = new Intent(this.getApplicationContext(), HomescreenWidgetProvider.class);
-            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
+            Intent mainMenuIntent = new Intent(this.getApplicationContext(), MainMenuActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this.getApplicationContext(), 0, mainMenuIntent, 0);
+
             remoteViews.setOnClickPendingIntent(R.id.homescreen_text, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }

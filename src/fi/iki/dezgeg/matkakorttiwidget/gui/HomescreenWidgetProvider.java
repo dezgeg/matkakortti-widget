@@ -1,7 +1,11 @@
 package fi.iki.dezgeg.matkakorttiwidget.gui;
 
+import android.app.PendingIntent;
 import android.appwidget.*;
 import android.content.*;
+import android.widget.RemoteViews;
+
+import fi.iki.dezgeg.matkakorttiwidget.R;
 
 public class HomescreenWidgetProvider extends AppWidgetProvider
 {
@@ -32,12 +36,11 @@ public class HomescreenWidgetProvider extends AppWidgetProvider
         System.out.println("onUpdate");
         ComponentName thisWidget = new ComponentName(context, HomescreenWidgetProvider.class);
 
-        int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-        Intent intent = new Intent(context.getApplicationContext(), WidgetUpdaterService.class);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
+        Intent updateIntent = new Intent(context, WidgetUpdaterService.class);
+        updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 
         // Update the widgets via the service
-        context.startService(intent);
+        context.startService(updateIntent);
     }
 
 }
