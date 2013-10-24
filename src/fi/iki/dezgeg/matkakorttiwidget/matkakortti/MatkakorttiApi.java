@@ -7,25 +7,13 @@ import com.gistlabs.mechanize.document.html.HtmlElement;
 import com.gistlabs.mechanize.document.html.form.Form;
 import com.gistlabs.mechanize.document.html.form.SubmitButton;
 
-import org.apache.http.HttpVersion;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.security.KeyStore;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +27,8 @@ public class MatkakorttiApi
 {
     private String username;
     private String password;
+    public static final Pattern CARDS_JSON_PATTERN = Pattern.compile(".*?parseJSON\\('(.*)'\\).*", Pattern.DOTALL);
+    public static final Pattern DATE_PATTERN = Pattern.compile("^/Date\\(([0-9]+)\\)/$");
 
     public MatkakorttiApi(String username, String password) {
         this.username = username;
@@ -73,10 +63,8 @@ public class MatkakorttiApi
         HtmlDocument response = agent.get("https://omamatkakortti.hsl.fi/Basic/Cards.aspx");
         List<HtmlElement> scripts = response.htmlElements().getAll(byTag("script"));
 
-        Pattern jsonPattern = Pattern.compile(".*?parseJSON\\('(.*)'\\).*", Pattern.DOTALL);
-
         for (HtmlElement script : scripts) {
-            Matcher matcher = jsonPattern.matcher(script.getInnerHtml());
+            Matcher matcher = CARDS_JSON_PATTERN.matcher(script.getInnerHtml());
             if (matcher.matches()) {
                 return createCardFromJSON(matcher.group(1));
             }
@@ -89,11 +77,19 @@ public class MatkakorttiApi
         if (cards.length() == 0)
             throw new MatkakorttiException("Tunnuksella ei ole matkakortteja.");
 
-        JSONObject card = cards.getJSONObject(0);
+        JSONObject card = cards.getJSONObject(1);
         double moneyAsDouble = card.getDouble("RemainingMoney");
-
         // Round to BigDecimal cents safely
         BigDecimal money = new BigDecimal((int)Math.round(100 * moneyAsDouble)).divide(new BigDecimal(100));
-        return new Card(card.getString("name"), card.getString("id"), money);
+
+        String expiryDateStr = card.getJSONObject("PeriodProductState").getString("ExpiringDate");
+        Date expiryDate = null;
+        if (expiryDateStr != null) {
+            Matcher expiryDateMatch = DATE_PATTERN.matcher(expiryDateStr);
+            expiryDateMatch.matches(); // Must do this.
+            expiryDate = new Date(Long.parseLong(expiryDateMatch.group(1)));
+        }
+
+        return new Card(card.getString("name"), card.getString("id"), money, expiryDate);
     }
 }

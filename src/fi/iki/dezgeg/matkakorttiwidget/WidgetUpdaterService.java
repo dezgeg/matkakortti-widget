@@ -11,8 +11,10 @@ import android.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
 
+import java.text.SimpleDateFormat;
 import java.util.Timer;
 
+import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 
 public class WidgetUpdaterService extends IntentService
@@ -37,7 +39,10 @@ public class WidgetUpdaterService extends IntentService
         String message;
         boolean isError = false;
         try {
-            message = "" + new MatkakorttiApi(username, password).getCard().getMoney();
+            Card card = new MatkakorttiApi(username, password).getCard();
+            message = card.getMoney() + "";
+            if (card.getPeriodExpiryDate() != null)
+                message += "\n" + new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate());
         } catch (Exception e) {
             e.printStackTrace();
             message = e.getMessage();
