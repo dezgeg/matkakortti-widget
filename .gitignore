@@ -1,5 +1,2 @@
-bin/
-gen/
-*.apk
-*.class
-*.swp
+/target
+
