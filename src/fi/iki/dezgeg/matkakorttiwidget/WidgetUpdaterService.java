@@ -13,6 +13,8 @@ import android.widget.RemoteViews;
 
 import java.util.Timer;
 
+import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
+
 public class WidgetUpdaterService extends IntentService
 {
     private Timer timer = new Timer();
@@ -35,7 +37,7 @@ public class WidgetUpdaterService extends IntentService
         String message;
         boolean isError = false;
         try {
-            message = "" + MatkakorttiApi.getMoney(username, password);
+            message = "" + new MatkakorttiApi(username, password).getMoney();
         } catch (Exception e) {
             e.printStackTrace();
             message = e.getMessage();

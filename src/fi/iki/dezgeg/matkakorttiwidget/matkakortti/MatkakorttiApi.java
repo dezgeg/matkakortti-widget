@@ -1,4 +1,4 @@
-package fi.iki.dezgeg.matkakorttiwidget;
+package fi.iki.dezgeg.matkakorttiwidget.matkakortti;
 
 import com.gistlabs.mechanize.MechanizeAgent;
 import com.gistlabs.mechanize.document.Document;
@@ -22,90 +22,29 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import fi.iki.dezgeg.matkakorttiwidget.MatkakorttiException;
 
 import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byId;
 import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byTag;
 
 public class MatkakorttiApi
 {
-    private static class NonverifyingSSLSocketFactory extends SSLSocketFactory
-    {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+    private String username;
+    private String password;
 
-        public NonverifyingSSLSocketFactory(KeyStore truststore) throws Exception
-        {
-            super(truststore);
-
-            TrustManager tm = new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
-                {
-                }
-
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
-                {
-                }
-
-                public X509Certificate[] getAcceptedIssuers()
-                {
-                    return null;
-                }
-
-            };
-            sslContext.init(null, new TrustManager[] { tm }, null);
-        }
-
-        @Override
-        public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException,
-                UnknownHostException
-        {
-            return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
-        }
-
-        @Override
-        public Socket createSocket() throws IOException
-        {
-            return sslContext.getSocketFactory().createSocket();
-        }
+    public MatkakorttiApi(String password, String username) {
+        this.password = password;
+        this.username = username;
     }
 
-    private static AbstractHttpClient createNonverifyingHttpClient() throws Exception
+    public double getMoney() throws Exception
     {
-
-        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        trustStore.load(null, null);
-
-        SSLSocketFactory sf = new NonverifyingSSLSocketFactory(trustStore);
-        sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-        HttpParams params = new BasicHttpParams();
-        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-
-        SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        registry.register(new Scheme("https", sf, 443));
-
-        ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-
-        return new DefaultHttpClient(ccm, params);
-    }
-
-    public static double getMoney(String username, String password) throws Exception
-    {
-        AbstractHttpClient httpClient = createNonverifyingHttpClient();
+        AbstractHttpClient httpClient = NonverifyingSSLSocketFactory.createNonverifyingHttpClient();
 
         MechanizeAgent agent = new MechanizeAgent(httpClient);
         Document page = agent.get("https://omamatkakortti.hsl.fi/Login.aspx");
