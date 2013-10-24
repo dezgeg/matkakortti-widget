@@ -17,4 +17,11 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="PreferenceErrorTheme">
+        <item name="android:textAppearance">@style/PreferenceErrorTextAppearance</item>
+    </style>
+    <style name="PreferenceErrorTextAppearance" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColor">#ff0000</item>
+    </style>
+
 </resources>

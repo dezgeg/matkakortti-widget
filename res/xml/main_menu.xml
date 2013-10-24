@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="prefs">
-	<EditTextPreference
+    <PreferenceCategory
+            android:title="Account information">
+        <EditTextPreference
                 android:title="Username"
                 android:key="username"
                 android:singleLine="true"
                 android:inputType="textVisiblePassword|textNoSuggestions"/>
-	<EditTextPreference
+        <EditTextPreference
                 android:title="Password"
                 android:key="password"
                 android:singleLine="true"
                 android:inputType="textPassword" />
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:key="cardList"
+            android:title="Cards on your account">
+    </PreferenceCategory>
 </PreferenceScreen>

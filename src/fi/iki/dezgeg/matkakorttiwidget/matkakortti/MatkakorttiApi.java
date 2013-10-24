@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,7 +36,7 @@ public class MatkakorttiApi
         this.password = password;
     }
 
-    public Card getCard() throws Exception
+    public List<Card> getCards() throws Exception
     {
         AbstractHttpClient httpClient = NonverifyingSSLSocketFactory.createNonverifyingHttpClient();
 
@@ -63,28 +64,33 @@ public class MatkakorttiApi
         HtmlDocument response = agent.get("https://omamatkakortti.hsl.fi/Basic/Cards.aspx");
         List<HtmlElement> scripts = response.htmlElements().getAll(byTag("script"));
 
+        List<Card> cards = new ArrayList<Card>();
         for (HtmlElement script : scripts) {
             Matcher matcher = CARDS_JSON_PATTERN.matcher(script.getInnerHtml());
             if (matcher.matches()) {
-                return createCardFromJSON(matcher.group(1));
+                JSONArray cardsJson = new JSONArray(matcher.group(1));
+                for (int i = 0; i < cardsJson.length(); i++) {
+                    cards.add(createCardFromJSON(cardsJson.getJSONObject(i)));
+                }
+                return cards;
             }
         }
         throw new MatkakorttiException("No voi vittu");
     }
 
-    private Card createCardFromJSON(String json) throws JSONException {
-        JSONArray cards = new JSONArray(json);
-        if (cards.length() == 0)
-            throw new MatkakorttiException("Tunnuksella ei ole matkakortteja.");
+    public Card getCard() throws Exception
+    {
+        return getCards().get(1);
+    }
 
-        JSONObject card = cards.getJSONObject(1);
+    private Card createCardFromJSON(JSONObject card) throws JSONException {
         double moneyAsDouble = card.getDouble("RemainingMoney");
         // Round to BigDecimal cents safely
         BigDecimal money = new BigDecimal((int)Math.round(100 * moneyAsDouble)).divide(new BigDecimal(100));
 
         String expiryDateStr = card.getJSONObject("PeriodProductState").getString("ExpiringDate");
         Date expiryDate = null;
-        if (expiryDateStr != null) {
+        if (!expiryDateStr.equals("null")) {
             Matcher expiryDateMatch = DATE_PATTERN.matcher(expiryDateStr);
             expiryDateMatch.matches(); // Must do this.
             expiryDate = new Date(Long.parseLong(expiryDateMatch.group(1)));
