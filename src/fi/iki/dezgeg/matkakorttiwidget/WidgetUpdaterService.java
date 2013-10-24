@@ -37,7 +37,7 @@ public class WidgetUpdaterService extends IntentService
         String message;
         boolean isError = false;
         try {
-            message = "" + new MatkakorttiApi(username, password).getMoney();
+            message = "" + new MatkakorttiApi(username, password).getCard().getMoney();
         } catch (Exception e) {
             e.printStackTrace();
             message = e.getMessage();

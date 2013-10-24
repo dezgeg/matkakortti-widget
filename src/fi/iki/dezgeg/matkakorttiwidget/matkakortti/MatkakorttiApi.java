@@ -21,7 +21,9 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -42,7 +44,7 @@ public class MatkakorttiApi
         this.username = username;
     }
 
-    public double getMoney() throws Exception
+    public Card getCard() throws Exception
     {
         AbstractHttpClient httpClient = NonverifyingSSLSocketFactory.createNonverifyingHttpClient();
 
@@ -78,7 +80,12 @@ public class MatkakorttiApi
                 JSONArray cards = new JSONArray(matcher.group(1));
                 if (cards.length() == 0)
                     throw new MatkakorttiException("Tunnuksella ei ole matkakortteja.");
-                return cards.getJSONObject(0).getDouble("RemainingMoney");
+
+                JSONObject card = cards.getJSONObject(0);
+                double moneyAsDouble = card.getDouble("RemainingMoney");
+                // Ronud to BigDecimal cents safely
+                BigDecimal money = new BigDecimal((int)Math.round(100 * moneyAsDouble)).divide(new BigDecimal(100));
+                return new Card(card.getString("name"), card.getString("id"), money);
             }
         }
         throw new MatkakorttiException("No voi vittu");
