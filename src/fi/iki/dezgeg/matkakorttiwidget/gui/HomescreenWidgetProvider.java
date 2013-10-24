@@ -1,11 +1,7 @@
-package fi.iki.dezgeg.matkakorttiwidget;
+package fi.iki.dezgeg.matkakorttiwidget.gui;
 
-import java.util.*;
-
-import android.app.*;
 import android.appwidget.*;
 import android.content.*;
-import android.widget.*;
 
 public class HomescreenWidgetProvider extends AppWidgetProvider
 {

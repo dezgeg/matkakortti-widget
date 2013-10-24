@@ -1,4 +1,4 @@
-package fi.iki.dezgeg.matkakorttiwidget;
+package fi.iki.dezgeg.matkakorttiwidget.matkakortti;
 
 public class MatkakorttiException extends RuntimeException {
     public MatkakorttiException(Throwable throwable) {

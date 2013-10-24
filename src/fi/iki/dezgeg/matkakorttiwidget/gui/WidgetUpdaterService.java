@@ -1,4 +1,4 @@
-package fi.iki.dezgeg.matkakorttiwidget;
+package fi.iki.dezgeg.matkakorttiwidget.gui;
 
 import android.app.IntentService;
 import android.app.PendingIntent;
@@ -14,6 +14,8 @@ import android.widget.RemoteViews;
 import java.text.SimpleDateFormat;
 import java.util.Timer;
 
+import fi.iki.dezgeg.matkakorttiwidget.R;
+import fi.iki.dezgeg.matkakorttiwidget.gui.HomescreenWidgetProvider;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 

@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fi.iki.dezgeg.matkakorttiwidget.MatkakorttiException;
-
 import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byId;
 import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byTag;
 

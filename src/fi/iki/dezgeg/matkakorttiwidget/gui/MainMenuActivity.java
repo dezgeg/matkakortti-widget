@@ -1,19 +1,17 @@
-package fi.iki.dezgeg.matkakorttiwidget;
+package fi.iki.dezgeg.matkakorttiwidget.gui;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.*;
-import android.app.Activity;
 import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.text.Html;
 import android.view.Menu;
 import android.view.Window;
-import android.widget.TextView;
 
 import java.util.List;
 
+import fi.iki.dezgeg.matkakorttiwidget.R;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 
