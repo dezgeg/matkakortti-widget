@@ -12,6 +12,10 @@
                 android:key="password"
                 android:singleLine="true"
                 android:inputType="textPassword" />
+        <Preference
+            android:key="registerLink"
+            android:title="Don't have an Oma Matkakortti account?"
+            android:summary="Register here."/>
     </PreferenceCategory>
     <PreferenceCategory
             android:key="cardList"

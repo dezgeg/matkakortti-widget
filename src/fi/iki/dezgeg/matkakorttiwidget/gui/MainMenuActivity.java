@@ -1,5 +1,6 @@
 package fi.iki.dezgeg.matkakorttiwidget.gui;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.*;
@@ -86,6 +87,15 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         for (String prefKey : PREF_KEYS)
             updatePrefTitle(getPreferenceScreen().getSharedPreferences(), prefKey);
+        findPreference("registerLink").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://omamatkakortti.hsl.fi"));
+                startActivity(intent);
+                return true;
+            }
+        });
         updateCardList();
     }
 
