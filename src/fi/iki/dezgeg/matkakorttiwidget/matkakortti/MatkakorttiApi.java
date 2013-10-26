@@ -4,6 +4,7 @@ import com.gistlabs.mechanize.MechanizeAgent;
 import com.gistlabs.mechanize.document.Document;
 import com.gistlabs.mechanize.document.html.HtmlDocument;
 import com.gistlabs.mechanize.document.html.HtmlElement;
+import com.gistlabs.mechanize.document.html.HtmlNode;
 import com.gistlabs.mechanize.document.html.form.Form;
 import com.gistlabs.mechanize.document.html.form.SubmitButton;
 
@@ -80,11 +81,14 @@ public class MatkakorttiApi
         HtmlElement validationSummary = loginResponse.htmlElements().get(byId("Etuile_mainValidationSummary"));
 
         if (validationSummary != null) {
-            List<HtmlElement> errorElements = validationSummary.get(byTag("ul")).getAll(byTag("li"));
+            List<HtmlNode> errorElements = validationSummary.get(byTag("ul")).getChildren();
             String errors = "";
             // - 1 since the service will always complain about our browser.
-            for (int i = 0; i < errorElements.size() - 1; i++)
-                errors += errorElements.get(i).getText() + "\n";
+            for (int i = 0; i < errorElements.size() - 1; i++) {
+                HtmlNode elem = errorElements.get(i);
+                if (elem instanceof HtmlElement)
+                    errors += ((HtmlElement)elem).getText() + "\n";
+            }
             throw new MatkakorttiException(errors);
         }
         return agent;
