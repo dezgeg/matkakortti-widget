@@ -32,4 +32,14 @@ public class Card {
     public Date getPeriodExpiryDate() {
         return periodExpiryDate;
     }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                ", money=" + money +
+                ", periodExpiryDate=" + periodExpiryDate +
+                '}';
+    }
 }
