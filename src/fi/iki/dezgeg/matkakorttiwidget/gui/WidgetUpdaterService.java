@@ -17,9 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
-import fi.iki.dezgeg.matkakorttiwidget.gui.HomescreenWidgetProvider;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
-import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 
 public class WidgetUpdaterService extends IntentService
 {
@@ -35,38 +33,36 @@ public class WidgetUpdaterService extends IntentService
         try {
             updateWidgets(getApplicationContext(), MatkakorttiWidgetApp.getCardList());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            setWidgetText(getApplicationContext(), e.getMessage(), true);
         }
     }
 
     public static void updateWidgets(Context context, List<Card> cards) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ComponentName widget = new ComponentName(context, HomescreenWidgetProvider.class);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widget);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String message = "";
-        boolean isError = false;
         boolean anyCards = false;
-        try {
-            for (Card card : cards) {
-                if (!prefs.getBoolean("cardSelected_" + card.getId(), false))
-                    continue;
+        for (Card card : cards) {
+            if (!prefs.getBoolean("cardSelected_" + card.getId(), false))
+                continue;
 
-                message = card.getMoney() + "";
-                if (card.getPeriodExpiryDate() != null)
-                    message += "\n" + new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate());
-                anyCards = true;
-            }
-            if (!anyCards) {
-                isError = true;
-                message = "No cards selected!";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            message = e.getMessage();
-            isError = true;
+            message = card.getMoney() + "";
+            if (card.getPeriodExpiryDate() != null)
+                message += "\n" + new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate());
+            anyCards = true;
         }
+
+        if (!anyCards)
+            setWidgetText(context, "No cards selected!", true);
+        else
+            setWidgetText(context, message, false);
+    }
+
+    private static void setWidgetText(Context context, String message, boolean isError) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName widget = new ComponentName(context, HomescreenWidgetProvider.class);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widget);
+
 
         for (int widgetId : appWidgetIds) {
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget);
