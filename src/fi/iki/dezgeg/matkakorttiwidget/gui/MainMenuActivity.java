@@ -15,9 +15,9 @@ import android.preference.PreferenceGroup;
 import android.text.Html;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
@@ -51,7 +51,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         protected void onPostExecute(MatkakorttiApiResult result) {
             super.onPostExecute(result);
 
-            PreferenceGroup cardList = getCardList();
+            final PreferenceGroup cardList = getCardList();
             if (result.getException() != null) {
                 fetchedCards = null;
                 EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
@@ -63,11 +63,46 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 fetchedCards = result.getCardList();
                 WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
 
-                for (Card card : result.getCardList()) {
-                    CheckBoxPreference pref = new CheckBoxPreference(MainMenuActivity.this);
-                    pref.setKey("cardSelected_" + card.getId());
+                // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
+                final String thisWidgetKey = "cardSelected_" + appWidgetId;
+                String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
+                boolean foundSelected = false;
+                List<CheckBoxPreference> buttons = new ArrayList<CheckBoxPreference>();
+                for (final Card card : result.getCardList()) {
+                    final CheckBoxPreference pref = new CheckBoxPreference(MainMenuActivity.this);
+                    pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
                     pref.setTitle(card.getName());
+                    if (!foundSelected && card.getId().equals(selectedCardId)) {
+                        pref.setChecked(true);
+                        foundSelected = true;
+                    }
+                    pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference unused) {
+                            // !!!!! When we are called, the box has already changed state.
+
+                            // Un-checking the selected box.
+                            if (!pref.isChecked()) {
+                                pref.setChecked(true);
+                                return true;
+                            }
+                            for (int i = 0; i < cardList.getPreferenceCount(); i++) {
+                                CheckBoxPreference cp = ((CheckBoxPreference) cardList.getPreference(i));
+                                cp.setChecked(false);
+                            }
+                            pref.setChecked(true);
+                            SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
+                            editor.putString(thisWidgetKey, card.getId()).commit();
+                            return true;
+                        }
+                    });
                     cardList.addPreference(pref);
+                }
+
+                if (!foundSelected && cardList.getPreferenceCount() > 0) {
+                    SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
+                    editor.putString(thisWidgetKey, fetchedCards.get(0).getId()).commit();
+                    ((CheckBoxPreference) cardList.getPreference(0)).setChecked(true);
                 }
             }
             MainMenuActivity.this.setProgressBarIndeterminateVisibility(false);
@@ -106,12 +141,14 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
             }
         });
 
-        setResult(RESULT_CANCELED);
         Bundle extras = getIntent().getExtras();
         if (extras != null)
             appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-    }
+        else
+            appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
 
+        setResult(RESULT_CANCELED);
+    }
 
     @Override
     protected void onResume() {
@@ -126,6 +163,12 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     protected void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 
     @Override

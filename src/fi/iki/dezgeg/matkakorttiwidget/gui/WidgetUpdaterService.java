@@ -7,10 +7,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +19,8 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 
 public class WidgetUpdaterService extends IntentService
 {
+    static int vittulaskuri = 0;
+
     public WidgetUpdaterService()
     {
         super("MatkakorttiWidgetUpdaterService");
@@ -29,63 +29,72 @@ public class WidgetUpdaterService extends IntentService
     public void onHandleIntent(Intent source)
     {
         System.out.println("onHandleIntent: " + source.toString());
-
         try {
             updateWidgets(getApplicationContext(), MatkakorttiWidgetApp.getCardList());
         } catch (Exception e) {
-            setWidgetText(getApplicationContext(), e.getMessage(), "", "", true);
+            throw new RuntimeException(e);
         }
     }
 
     public static void updateWidgets(Context context, List<Card> cards) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String name = null;
-        String money = null;
-        String period = "None";
-        boolean anyCards = false;
-        for (Card card : cards) {
-            if (!prefs.getBoolean("cardSelected_" + card.getId(), false))
-                continue;
-
-            name = card.getName();
-            money = card.getMoney() + "";
-            if (card.getPeriodExpiryDate() != null)
-                period = new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate()) + "";
-            anyCards = true;
-        }
-
-        if (!anyCards)
-            setWidgetText(context, "No cards selected!", "", "", true);
-        else {
-            setWidgetText(context, name, money, period, false);
-        }
-    }
-
-    private static void setWidgetText(Context context, String name, String money, String period, boolean isError) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName widget = new ComponentName(context, HomescreenWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widget);
 
-        int layoutId = isError ? R.layout.homescreen_widget_warning : R.layout.homescreen_widget;
-        int rootWidgetId = isError ? R.id.homescreen_warning_layout : R.id.homescreen_layout;
-
         for (int widgetId : appWidgetIds) {
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
-            if (isError) {
-                remoteViews.setTextViewText(R.id.homescreen_warning_text, name);
-            } else {
-                remoteViews.setTextViewText(R.id.homescreen_name, name);
-                remoteViews.setTextViewText(R.id.homescreen_money_text, money);
-                remoteViews.setTextViewText(R.id.homescreen_period_text, period);
+            String cardId = prefs.getString("cardSelected_" + widgetId, "");
+
+            Card card = null;
+            // FIXME use a map
+            for (Card c : cards) {
+                if (c.getId().equals(cardId)) {
+                    card = c;
+                    break;
+                }
             }
-
-            Intent mainMenuIntent = new Intent(context, MainMenuActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mainMenuIntent, 0);
-
-            remoteViews.setOnClickPendingIntent(rootWidgetId, pendingIntent);
-            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+            if (card == null) {
+                setWidgetError(context, appWidgetManager, widgetId, "Card doesn't exist");
+                continue;
+            }
+            String periodEnd = "---";
+            if (card.getPeriodExpiryDate() != null)
+                periodEnd = new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate()) + "";
+            setWidgetText(context, appWidgetManager, widgetId, card.getName(), card.getMoney() + "", periodEnd);
         }
+    }
+
+    private static void setWidgetText(Context context, AppWidgetManager appWidgetManager, int widgetId,
+                                      String name, String money, String period) {
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget);
+        remoteViews.setTextViewText(R.id.homescreen_name, name);
+        remoteViews.setTextViewText(R.id.homescreen_money_text, money);
+        remoteViews.setTextViewText(R.id.homescreen_period_text, period);
+
+        finishWidgetUpdate(context, appWidgetManager, widgetId, remoteViews, R.id.homescreen_layout);
+    }
+
+    private static void setWidgetError(Context context, AppWidgetManager appWidgetManager, int widgetId,
+                                       String error) {
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget_warning);
+        remoteViews.setTextViewText(R.id.homescreen_warning_text, error);
+
+        finishWidgetUpdate(context, appWidgetManager, widgetId, remoteViews, R.id.homescreen_warning_layout);
+    }
+
+    private static void finishWidgetUpdate(Context context, AppWidgetManager appWidgetManager,
+                                           int widgetId, RemoteViews remoteViews, int rootWidgetId) {
+        Intent reconfigureIntent = new Intent(context, MainMenuActivity.class);
+
+        reconfigureIntent.setAction("fi.iki.dezgeg.matkakorttiwidget.APPWIDGET_CONFIGURE");
+        reconfigureIntent.putExtra("EXTRA_APPWIDGET_ID", widgetId);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, widgetId, reconfigureIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_CANCEL_CURRENT);
+        remoteViews.setOnClickPendingIntent(rootWidgetId, pendingIntent);
+
+        appWidgetManager.updateAppWidget(widgetId, remoteViews);
     }
 
     @Override

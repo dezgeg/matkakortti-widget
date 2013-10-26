@@ -1,11 +1,9 @@
 package fi.iki.dezgeg.matkakorttiwidget.gui;
 
-import android.app.PendingIntent;
-import android.appwidget.*;
-import android.content.*;
-import android.widget.RemoteViews;
-
-import fi.iki.dezgeg.matkakorttiwidget.R;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
+import android.content.Context;
+import android.content.Intent;
 
 public class HomescreenWidgetProvider extends AppWidgetProvider
 {

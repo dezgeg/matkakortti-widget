@@ -1,7 +1,6 @@
 package fi.iki.dezgeg.matkakorttiwidget.gui;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -16,8 +15,7 @@ public class MatkakorttiWidgetApp extends Application {
     // Synchronized since when the app is started from the IDE,
     // the MainMenuActivity and the widget updater run concurrently ->
     // both log in to Oma Matkakortti simultaneously -> session errors.
-    public static synchronized List<Card> getCardList() throws Exception
-    {
+    public static synchronized List<Card> getCardList() throws Exception {
         String username = prefs.getString("username", "<not set>");
         String password = prefs.getString("password", "");
 
