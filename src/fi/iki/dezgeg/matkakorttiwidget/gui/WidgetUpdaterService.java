@@ -32,12 +32,8 @@ public class WidgetUpdaterService extends IntentService
     {
         System.out.println("onHandleIntent: " + source.toString());
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String username = prefs.getString("username", "<not set>");
-        String password = prefs.getString("password", "");
-
         try {
-            updateWidgets(getApplicationContext(), new MatkakorttiApi(username, password).getCards());
+            updateWidgets(getApplicationContext(), MatkakorttiWidgetApp.getCardList());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

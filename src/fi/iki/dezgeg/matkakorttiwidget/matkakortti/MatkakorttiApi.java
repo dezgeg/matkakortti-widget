@@ -28,6 +28,7 @@ public class MatkakorttiApi
     private String password;
     public static final Pattern CARDS_JSON_PATTERN = Pattern.compile(".*?parseJSON\\('(.*)'\\).*", Pattern.DOTALL);
     public static final Pattern DATE_PATTERN = Pattern.compile("^/Date\\(([0-9]+)\\)/$");
+    public static final Pattern SESSION_EXISTS_PATTERN = Pattern.compile(".*on toinen avoin istunto.*");
 
     public MatkakorttiApi(String username, String password) {
         this.username = username;
@@ -36,6 +37,35 @@ public class MatkakorttiApi
 
     public List<Card> getCards() throws Exception
     {
+        MechanizeAgent agent;
+        try {
+            agent = login();
+        } catch (MatkakorttiException me) {
+            if (SESSION_EXISTS_PATTERN.matcher(me.getMessage()).matches()) // Try again once
+                agent = login();
+            else
+                throw me;
+        }
+
+        // TODO: Follow redirects
+        HtmlDocument response = agent.get("https://omamatkakortti.hsl.fi/Basic/Cards.aspx");
+        List<HtmlElement> scripts = response.htmlElements().getAll(byTag("script"));
+
+        List<Card> cards = new ArrayList<Card>();
+        for (HtmlElement script : scripts) {
+            Matcher matcher = CARDS_JSON_PATTERN.matcher(script.getInnerHtml());
+            if (matcher.matches()) {
+                JSONArray cardsJson = new JSONArray(matcher.group(1));
+                for (int i = 0; i < cardsJson.length(); i++) {
+                    cards.add(createCardFromJSON(cardsJson.getJSONObject(i)));
+                }
+                return cards;
+            }
+        }
+        throw new MatkakorttiException("No voi vittu");
+    }
+
+    private MechanizeAgent login() throws Exception {
         AbstractHttpClient httpClient = NonverifyingSSLSocketFactory.createNonverifyingHttpClient();
 
         MechanizeAgent agent = new MechanizeAgent(httpClient);
@@ -57,23 +87,7 @@ public class MatkakorttiApi
                 errors += errorElements.get(i).getText() + "\n";
             throw new MatkakorttiException(errors);
         }
-
-        // TODO: Follow redirects
-        HtmlDocument response = agent.get("https://omamatkakortti.hsl.fi/Basic/Cards.aspx");
-        List<HtmlElement> scripts = response.htmlElements().getAll(byTag("script"));
-
-        List<Card> cards = new ArrayList<Card>();
-        for (HtmlElement script : scripts) {
-            Matcher matcher = CARDS_JSON_PATTERN.matcher(script.getInnerHtml());
-            if (matcher.matches()) {
-                JSONArray cardsJson = new JSONArray(matcher.group(1));
-                for (int i = 0; i < cardsJson.length(); i++) {
-                    cards.add(createCardFromJSON(cardsJson.getJSONObject(i)));
-                }
-                return cards;
-            }
-        }
-        throw new MatkakorttiException("No voi vittu");
+        return agent;
     }
 
     private Card createCardFromJSON(JSONObject card) throws JSONException {

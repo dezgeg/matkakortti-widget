@@ -19,7 +19,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
 {
     private List<Card> fetchedCards;
     private static final String[] PREF_KEYS = new String[] { "username", "password" };
-    private class FetchCardListTask extends AsyncTask<MatkakorttiApi, Void, MatkakorttiApiResult> {
+    private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
 
         @Override
         protected void onPreExecute() {
@@ -30,10 +30,9 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         }
 
         @Override
-        protected MatkakorttiApiResult doInBackground(MatkakorttiApi... matkakorttiApis) {
-            MatkakorttiApi api = matkakorttiApis[0];
+        protected MatkakorttiApiResult doInBackground(Void... unused) {
             try {
-                return new MatkakorttiApiResult(api.getCards());
+                return new MatkakorttiApiResult(MatkakorttiWidgetApp.getCardList());
             } catch (Exception e) {
                 return new MatkakorttiApiResult(e);
             }
@@ -53,6 +52,8 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 cardList.addPreference(text);
             } else {
                 fetchedCards = result.getCardList();
+                WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
+
                 for (Card card : result.getCardList()) {
                     CheckBoxPreference pref = new CheckBoxPreference(MainMenuActivity.this);
                     pref.setKey("cardSelected_" + card.getId());
@@ -115,9 +116,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
     private void updateCardList() {
-        SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
-        MatkakorttiApi api = new MatkakorttiApi(prefs.getString("username", ""), prefs.getString("password", ""));
-        new FetchCardListTask().execute(api);
+        new FetchCardListTask().execute();
     }
 
     private void updatePrefTitle(SharedPreferences prefs, String key) {
