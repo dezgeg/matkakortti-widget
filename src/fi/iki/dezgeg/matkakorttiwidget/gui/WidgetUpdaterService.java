@@ -33,32 +33,36 @@ public class WidgetUpdaterService extends IntentService
         try {
             updateWidgets(getApplicationContext(), MatkakorttiWidgetApp.getCardList());
         } catch (Exception e) {
-            setWidgetText(getApplicationContext(), e.getMessage(), true);
+            setWidgetText(getApplicationContext(), e.getMessage(), "", "", true);
         }
     }
 
     public static void updateWidgets(Context context, List<Card> cards) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String message = "";
+        String name = null;
+        String money = null;
+        String period = "None";
         boolean anyCards = false;
         for (Card card : cards) {
             if (!prefs.getBoolean("cardSelected_" + card.getId(), false))
                 continue;
 
-            message = card.getMoney() + "";
+            name = card.getName();
+            money = card.getMoney() + "";
             if (card.getPeriodExpiryDate() != null)
-                message += "\n" + new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate());
+                period = new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate()) + "";
             anyCards = true;
         }
 
         if (!anyCards)
-            setWidgetText(context, "No cards selected!", true);
-        else
-            setWidgetText(context, message, false);
+            setWidgetText(context, "No cards selected!", "", "", true);
+        else {
+            setWidgetText(context, name, money, period, false);
+        }
     }
 
-    private static void setWidgetText(Context context, String message, boolean isError) {
+    private static void setWidgetText(Context context, String name, String money, String period, boolean isError) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName widget = new ComponentName(context, HomescreenWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widget);
@@ -66,19 +70,22 @@ public class WidgetUpdaterService extends IntentService
 
         for (int widgetId : appWidgetIds) {
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget);
-            remoteViews.setTextViewText(R.id.homescreen_text, message);
             if (isError) {
-                remoteViews.setTextColor(R.id.homescreen_text, Color.RED);
-                remoteViews.setTextViewTextSize(R.id.homescreen_text, TypedValue.COMPLEX_UNIT_PT, 5.0f);
+                remoteViews.setTextColor(R.id.homescreen_name, Color.RED);
+                remoteViews.setTextViewTextSize(R.id.homescreen_name, TypedValue.COMPLEX_UNIT_PT, 5.0f);
+                remoteViews.setTextViewText(R.id.homescreen_name, name);
             } else {
-                remoteViews.setTextColor(R.id.homescreen_text, Color.WHITE);
-                remoteViews.setTextViewTextSize(R.id.homescreen_text, TypedValue.COMPLEX_UNIT_PT, 12.0f);
+                remoteViews.setTextColor(R.id.homescreen_name, Color.WHITE);
+
+                remoteViews.setTextViewText(R.id.homescreen_name, name);
+                remoteViews.setTextViewText(R.id.homescreen_money_text, money);
+                remoteViews.setTextViewText(R.id.homescreen_period_text, period);
             }
 
             Intent mainMenuIntent = new Intent(context, MainMenuActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mainMenuIntent, 0);
 
-            remoteViews.setOnClickPendingIntent(R.id.homescreen_text, pendingIntent);
+            remoteViews.setOnClickPendingIntent(R.id.homescreen_layout, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }

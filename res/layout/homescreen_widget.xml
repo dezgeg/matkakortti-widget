@@ -1,18 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/homescreen_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:weightSum="3"
+    android:background="#000000"
+    android:baselineAligned="false">
 
     <TextView
-        android:id="@+id/homescreen_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal|center_vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Card Name"
+        android:id="@+id/homescreen_name"
+        android:layout_gravity="center_vertical"
+        android:textColor="#ffffff"
         android:background="#000000"
-        android:text=""
-        >
-    </TextView>
+        android:gravity="center_horizontal" />
 
-</LinearLayout> 
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&#x20AC;"
+            android:id="@+id/homescreen_money_icon"
+            android:textColor="@color/homescreen_icon_color"
+            android:textIsSelectable="false"
+            android:textSize="@dimen/homescreen_money_icon_size"
+            android:typeface="monospace"
+            android:layout_gravity="center|bottom" />
+
+        <TextView
+            android:id="@+id/homescreen_money_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="#000000"
+            android:text="$: 123.45"
+            android:textColor="#ffffff"
+            android:singleLine="true"
+            android:textSize="@dimen/homescreen_value_size">
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&#x0231A;"
+            android:id="@+id/homescreen_period_icon"
+            android:textColor="@color/homescreen_icon_color"
+            android:layout_gravity="center_vertical"
+            android:textSize="@dimen/homescreen_period_icon_size"
+            android:typeface="monospace" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="25.8"
+            android:id="@+id/homescreen_period_text"
+            android:layout_gravity="center_vertical"
+            android:background="#000000"
+            android:textColor="#ffffff"
+            android:singleLine="true"
+            android:textSize="@dimen/homescreen_value_size" />
+
+    </GridLayout>
+
+</LinearLayout>
