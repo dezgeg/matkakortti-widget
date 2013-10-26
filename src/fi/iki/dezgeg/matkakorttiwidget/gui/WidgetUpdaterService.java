@@ -67,16 +67,14 @@ public class WidgetUpdaterService extends IntentService
         ComponentName widget = new ComponentName(context, HomescreenWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widget);
 
+        int layoutId = isError ? R.layout.homescreen_widget_warning : R.layout.homescreen_widget;
+        int rootWidgetId = isError ? R.id.homescreen_warning_layout : R.id.homescreen_layout;
 
         for (int widgetId : appWidgetIds) {
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget);
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
             if (isError) {
-                remoteViews.setTextColor(R.id.homescreen_name, Color.RED);
-                remoteViews.setTextViewTextSize(R.id.homescreen_name, TypedValue.COMPLEX_UNIT_PT, 5.0f);
-                remoteViews.setTextViewText(R.id.homescreen_name, name);
+                remoteViews.setTextViewText(R.id.homescreen_warning_text, name);
             } else {
-                remoteViews.setTextColor(R.id.homescreen_name, Color.WHITE);
-
                 remoteViews.setTextViewText(R.id.homescreen_name, name);
                 remoteViews.setTextViewText(R.id.homescreen_money_text, money);
                 remoteViews.setTextViewText(R.id.homescreen_period_text, period);
@@ -85,7 +83,7 @@ public class WidgetUpdaterService extends IntentService
             Intent mainMenuIntent = new Intent(context, MainMenuActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mainMenuIntent, 0);
 
-            remoteViews.setOnClickPendingIntent(R.id.homescreen_layout, pendingIntent);
+            remoteViews.setOnClickPendingIntent(rootWidgetId, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }
