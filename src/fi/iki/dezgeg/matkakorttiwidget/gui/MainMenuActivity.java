@@ -25,7 +25,8 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 
 public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-    private List<Card> fetchedCards;
+    private volatile List<Card> fetchedCards;
+    private FetchCardListTask fetchCardListTask;
     private static final String[] PREF_KEYS = new String[]{"username", "password"};
 
     private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
@@ -56,7 +57,13 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 fetchedCards = null;
                 EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
                 text.setEnabled(false);
-                String escaped = result.getException().getMessage(); // TODO: escape
+
+                String escaped;
+                if (Utils.isConnectionProblemRelatedException(result.getException()))
+                    escaped = "Problem with Internet connection.";
+                else
+                     escaped = result.getException().getMessage(); // TODO: escape
+
                 text.setTitle(Html.fromHtml("<font color='#FF0000'>Error: " + escaped + "</font>"));
                 cardList.addPreference(text);
             } else {
@@ -178,12 +185,6 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         updatePrefTitle(prefs, key);
 
@@ -196,9 +197,13 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         updateOkButtonEnabledState();
     }
 
-    private void updateCardList() {
-        if (loginDetailsFilledIn())
-            new FetchCardListTask().execute();
+    private synchronized void updateCardList() {
+        if (loginDetailsFilledIn()) {
+            if (fetchCardListTask != null && fetchCardListTask.getStatus() != AsyncTask.Status.FINISHED)
+                fetchCardListTask.cancel(true);
+            fetchCardListTask = new FetchCardListTask();
+            fetchCardListTask.execute();
+        }
     }
 
     private void updatePrefTitle(SharedPreferences prefs, String key) {

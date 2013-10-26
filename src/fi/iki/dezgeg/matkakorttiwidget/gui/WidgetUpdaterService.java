@@ -20,19 +20,36 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 
 public class WidgetUpdaterService extends IntentService
 {
+    private boolean initialUpdate = true;
+    private boolean validDataOnWidgets = false;
+
     public WidgetUpdaterService()
     {
         super("MatkakorttiWidgetUpdaterService");
     }
+
     @Override
     public void onHandleIntent(Intent source)
     {
-        System.out.println("onHandleIntent: " + source.toString());
+        if (initialUpdate) {
+            initialUpdate = false;
+                updateWidgets(getApplicationContext(), new ArrayList<Card>(), "Loading...");
+        }
+
+        Throwable err;
         try {
             updateWidgets(getApplicationContext(), MatkakorttiWidgetApp.getCardList());
+            validDataOnWidgets = true;
+            return;
         } catch (Exception e) {
-            updateWidgets(getApplicationContext(), new ArrayList<Card>(), e.getMessage());
+            err = e;
         }
+        if (Utils.isConnectionProblemRelatedException(err)) {
+            if (!validDataOnWidgets)
+                updateWidgets(getApplicationContext(), new ArrayList<Card>(), "Connection error.");
+            return;
+        }
+        updateWidgets(getApplicationContext(), new ArrayList<Card>(), err.getMessage());
     }
 
     public static void updateWidgets(Context context, List<Card> cards) {
@@ -107,5 +124,4 @@ public class WidgetUpdaterService extends IntentService
     {
         return null;
     }
-
 }
