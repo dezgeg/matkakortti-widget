@@ -16,10 +16,10 @@ import fi.iki.dezgeg.matkakorttiwidget.R;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 
-public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
-{
+public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     private List<Card> fetchedCards;
-    private static final String[] PREF_KEYS = new String[] { "username", "password" };
+    private static final String[] PREF_KEYS = new String[]{"username", "password"};
+
     private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
 
         @Override
@@ -67,8 +67,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(savedInstanceState);
@@ -81,8 +80,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         for (String prefKey : PREF_KEYS)
@@ -100,26 +98,23 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
-    {
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         updatePrefTitle(prefs, key);
         if (key.equals("username") || key.equals("password")) {
-            if(!findPreference("username").equals("") && !findPreference("password").equals("")) {
+            if (!findPreference("username").equals("") && !findPreference("password").equals("")) {
                 updateCardList();
             }
         }
@@ -145,8 +140,8 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
 }
-class MatkakorttiApiResult
-{
+
+class MatkakorttiApiResult {
     private List<Card> cardList;
     private Exception exception;
 
