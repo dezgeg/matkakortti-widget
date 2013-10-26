@@ -104,13 +104,6 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         updatePrefTitle(prefs, key);
         if (key.equals("username") || key.equals("password")) {
