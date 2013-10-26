@@ -17,6 +17,7 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 
 public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
+    private List<Card> fetchedCards;
     private static final String[] PREF_KEYS = new String[] { "username", "password" };
     private class FetchCardListTask extends AsyncTask<MatkakorttiApi, Void, MatkakorttiApiResult> {
 
@@ -44,12 +45,14 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
 
             PreferenceGroup cardList = getCardList();
             if (result.getException() != null) {
+                fetchedCards = null;
                 EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
                 text.setEnabled(false);
                 String escaped = result.getException().getMessage(); // TODO: escape
                 text.setTitle(Html.fromHtml("<font color='#FF0000'>Error: " + escaped + "</font>"));
                 cardList.addPreference(text);
             } else {
+                fetchedCards = result.getCardList();
                 for (Card card : result.getCardList()) {
                     CheckBoxPreference pref = new CheckBoxPreference(MainMenuActivity.this);
                     pref.setKey("cardSelected_" + card.getId());
@@ -118,7 +121,9 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     }
 
     private void updatePrefTitle(SharedPreferences prefs, String key) {
-        if (key.equals("password")) {
+        if (key.startsWith("cardSelected_") && fetchedCards != null) {
+            WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
+        } else if (key.equals("password")) {
             String password = prefs.getString(key, "");
             String masked = "";
             for (int i = 0; i < password.length(); i++)

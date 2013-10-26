@@ -34,7 +34,6 @@ public class HomescreenWidgetProvider extends AppWidgetProvider
     {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         System.out.println("onUpdate");
-        ComponentName thisWidget = new ComponentName(context, HomescreenWidgetProvider.class);
 
         Intent updateIntent = new Intent(context, WidgetUpdaterService.class);
         updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
