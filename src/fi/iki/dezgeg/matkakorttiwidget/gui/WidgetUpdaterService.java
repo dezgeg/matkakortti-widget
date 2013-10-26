@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
@@ -19,8 +20,6 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 
 public class WidgetUpdaterService extends IntentService
 {
-    static int vittulaskuri = 0;
-
     public WidgetUpdaterService()
     {
         super("MatkakorttiWidgetUpdaterService");
@@ -32,11 +31,16 @@ public class WidgetUpdaterService extends IntentService
         try {
             updateWidgets(getApplicationContext(), MatkakorttiWidgetApp.getCardList());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            updateWidgets(getApplicationContext(), new ArrayList<Card>(), e.getMessage());
         }
     }
 
     public static void updateWidgets(Context context, List<Card> cards) {
+        updateWidgets(context, cards, null);
+    }
+
+    // 3rd parameter is total hack.
+    public static void updateWidgets(Context context, List<Card> cards, String error) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -55,7 +59,8 @@ public class WidgetUpdaterService extends IntentService
                 }
             }
             if (card == null) {
-                setWidgetError(context, appWidgetManager, widgetId, "Card doesn't exist");
+                String e = error != null ? error: "Card doesn't exist";
+                setWidgetError(context, appWidgetManager, widgetId, e);
                 continue;
             }
             String periodEnd = "---";

@@ -106,11 +106,22 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 }
             }
             MainMenuActivity.this.setProgressBarIndeterminateVisibility(false);
+            updateOkButtonEnabledState();
         }
     }
 
     private PreferenceGroup getCardList() {
         return (PreferenceGroup) findPreference("cardList");
+    }
+
+    private boolean loginDetailsFilledIn() {
+        SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+        return !prefs.getString("username", "").equals("") && !prefs.getString("password", "").equals("");
+    }
+
+    private void updateOkButtonEnabledState() {
+        boolean enable = loginDetailsFilledIn() && fetchedCards != null && !fetchedCards.isEmpty();
+        findViewById(R.id.settings_ok_button).setEnabled(enable);
     }
 
     @Override
@@ -157,6 +168,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         for (String prefKey : PREF_KEYS)
             updatePrefTitle(getPreferenceScreen().getSharedPreferences(), prefKey);
         updateCardList();
+        updateOkButtonEnabledState();
     }
 
     @Override
@@ -178,13 +190,15 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         if (key.startsWith("cardSelected_") && fetchedCards != null) {
             WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
         } else if (key.equals("username") || key.equals("password")) {
-            if (!findPreference("username").equals("") && !findPreference("password").equals(""))
                 updateCardList();
         }
+
+        updateOkButtonEnabledState();
     }
 
     private void updateCardList() {
-        new FetchCardListTask().execute();
+        if (loginDetailsFilledIn())
+            new FetchCardListTask().execute();
     }
 
     private void updatePrefTitle(SharedPreferences prefs, String key) {
