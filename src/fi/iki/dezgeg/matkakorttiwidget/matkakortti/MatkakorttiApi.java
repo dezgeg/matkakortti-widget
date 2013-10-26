@@ -23,8 +23,7 @@ import java.util.regex.Pattern;
 import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byId;
 import static com.gistlabs.mechanize.document.html.query.HtmlQueryBuilder.byTag;
 
-public class MatkakorttiApi
-{
+public class MatkakorttiApi {
     private String username;
     private String password;
     public static final Pattern CARDS_JSON_PATTERN = Pattern.compile(".*?parseJSON\\('(.*)'\\).*", Pattern.DOTALL);
@@ -36,8 +35,7 @@ public class MatkakorttiApi
         this.password = password;
     }
 
-    public List<Card> getCards() throws Exception
-    {
+    public List<Card> getCards() throws Exception {
         MechanizeAgent agent;
         try {
             agent = login();
@@ -87,7 +85,7 @@ public class MatkakorttiApi
             for (int i = 0; i < errorElements.size() - 1; i++) {
                 HtmlNode elem = errorElements.get(i);
                 if (elem instanceof HtmlElement)
-                    errors += ((HtmlElement)elem).getText() + "\n";
+                    errors += ((HtmlElement) elem).getText() + "\n";
             }
             throw new MatkakorttiException(errors);
         }
@@ -97,7 +95,7 @@ public class MatkakorttiApi
     private Card createCardFromJSON(JSONObject card) throws JSONException {
         double moneyAsDouble = card.getDouble("RemainingMoney");
         // Round to BigDecimal cents safely
-        BigDecimal money = new BigDecimal((int)Math.round(100 * moneyAsDouble)).divide(new BigDecimal(100));
+        BigDecimal money = new BigDecimal((int) Math.round(100 * moneyAsDouble)).divide(new BigDecimal(100));
 
         String expiryDateStr = card.getJSONObject("PeriodProductState").getString("ExpiringDate");
         Date expiryDate = null;
