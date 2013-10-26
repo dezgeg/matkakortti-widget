@@ -17,6 +17,16 @@
             android:title="Don't have an Oma Matkakortti account?"
             android:summary="Register here."/>
     </PreferenceCategory>
+    <!-- The 'OK' button is added in a bit hacky way, test that scrolling still works -->
+    <!--
+        <Preference android:title="Filler"/>
+        <Preference android:title="Filler"/>
+        <Preference android:title="Filler"/>
+        <Preference android:title="Filler"/>
+        <Preference android:title="Filler"/>
+        <Preference android:title="Filler"/>
+        <Preference android:title="Filler"/>
+    -->
     <PreferenceCategory
             android:key="cardList"
             android:title="Cards on your account">
