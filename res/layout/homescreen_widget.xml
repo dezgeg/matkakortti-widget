@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/homescreen_layout"
+    android:background="@color/homescreen_background_color"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:weightSum="3"
-    android:background="#000000"
     android:baselineAligned="false">
 
     <TextView
@@ -15,7 +15,6 @@
         android:id="@+id/homescreen_name"
         android:layout_gravity="center_vertical"
         android:textColor="#ffffff"
-        android:background="#000000"
         android:gravity="center_horizontal" />
 
     <GridLayout
@@ -40,7 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="#000000"
             android:textColor="#ffffff"
             android:singleLine="true"
             android:textSize="@dimen/homescreen_value_size">
@@ -61,7 +59,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/homescreen_period_text"
             android:layout_gravity="center_vertical"
-            android:background="#000000"
             android:textColor="#ffffff"
             android:singleLine="true"
             android:textSize="@dimen/homescreen_value_size" />
