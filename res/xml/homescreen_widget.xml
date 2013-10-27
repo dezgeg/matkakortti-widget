@@ -3,6 +3,6 @@
     android:configure="fi.iki.dezgeg.matkakorttiwidget.gui.MainMenuActivity"
     android:updatePeriodMillis="3600000"
     android:initialLayout="@layout/homescreen_widget_warning"
-    android:minHeight="36.0dip"
-    android:minWidth="36.0dip">
+    android:minHeight="40.0dp"
+    android:minWidth="40.0dp">
 </appwidget-provider>
