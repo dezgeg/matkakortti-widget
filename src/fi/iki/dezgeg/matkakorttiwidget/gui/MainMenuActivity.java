@@ -35,8 +35,8 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
 
     private static final String[][] PER_WIDGET_PREFS = new String[][]{
             {"showName", "Show name of the card on the widget"},
-            {"autoHidePeriod", "Hide period if no period"},
             {"autoHideMoney", "Hide cash if period"},
+            {"autoHidePeriod", "Hide period if no period"},
     };
 
     private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {

@@ -6,7 +6,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:gravity="center_vertical"
-    android:weightSum="3"
     android:baselineAligned="false">
 
     <TextView
@@ -15,12 +14,14 @@
         android:id="@+id/homescreen_name"
         android:layout_gravity="center_vertical"
         android:textColor="#ffffff"
-        android:gravity="center_horizontal" />
+        android:gravity="center_horizontal"
+        android:text="Name" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/homescreen_money_container">
+        android:id="@+id/homescreen_money_container"
+        android:layout_weight="1">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -50,7 +51,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/homescreen_period_container"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1">
 
         <ImageView
             android:layout_width="wrap_content"

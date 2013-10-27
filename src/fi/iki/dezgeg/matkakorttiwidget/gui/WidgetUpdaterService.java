@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,29 +82,51 @@ public class WidgetUpdaterService extends IntentService
                 setWidgetError(context, appWidgetManager, widgetId, e);
                 continue;
             }
-            String periodEnd = "---";
-            if (card.getPeriodExpiryDate() != null)
-                periodEnd = new SimpleDateFormat("dd.MM.").format(card.getPeriodExpiryDate()) + "";
-            setWidgetText(context, appWidgetManager, widgetId, card.getName(), card.getMoney() + "", periodEnd);
+
+            setWidgetText(context, appWidgetManager, widgetId, card);
         }
     }
 
+    private static boolean getBoolPref(SharedPreferences prefs, int widgetId, String key, boolean def) {
+        return prefs.getBoolean(Utils.prefKeyForWidgetId(widgetId, key), def);
+    }
+
     private static void setWidgetText(Context context, AppWidgetManager appWidgetManager, int widgetId,
-                                      String name, String money, String period) {
+                                      Card c) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (prefs.getBoolean(Utils.prefKeyForWidgetId(widgetId, "showName"), true)) {
-            remoteViews.setViewVisibility(R.id.homescreen_name, View.VISIBLE);
-            remoteViews.setTextViewText(R.id.homescreen_name, name);
-        } else {
-            remoteViews.setViewVisibility(R.id.homescreen_name, View.GONE);
-        }
 
-        remoteViews.setTextViewText(R.id.homescreen_money_text, money);
-        remoteViews.setTextViewText(R.id.homescreen_period_text, period);
+        boolean showName = getBoolPref(prefs, widgetId, "showName", true);
+        setTextOrHide(remoteViews, R.id.homescreen_name, R.id.homescreen_name,
+                c.getName(), showName);
+
+        // Show period if: autoHidePeriod not set OR the user has period
+        // Show money  if: period NOT show OR the money is non-zero OR
+        boolean showPeriod = !getBoolPref(prefs, widgetId, "autoHidePeriod", false) || c.getPeriodExpiryDate() != null;
+        boolean showMoney = !showPeriod ||
+                !getBoolPref(prefs, widgetId, "autoHideMoney", false) ||
+                c.getMoney().compareTo(BigDecimal.ZERO) > 0;
+
+        setTextOrHide(remoteViews, R.id.homescreen_money_container, R.id.homescreen_money_text,
+                c.getMoney() + "", showMoney);
+
+        String periodEnd = "---";
+        if (c.getPeriodExpiryDate() != null)
+            periodEnd = new SimpleDateFormat("dd.MM.").format(c.getPeriodExpiryDate()) + "";
+        setTextOrHide(remoteViews, R.id.homescreen_period_container, R.id.homescreen_period_text,
+                periodEnd, showPeriod);
 
         finishWidgetUpdate(context, appWidgetManager, widgetId, remoteViews, R.id.homescreen_layout);
+    }
+
+    private static void setTextOrHide(RemoteViews remoteViews, int containerId, int textId, String text, boolean show) {
+        if (show) {
+            remoteViews.setViewVisibility(containerId, View.VISIBLE);
+            remoteViews.setTextViewText(textId, text);
+        } else {
+            remoteViews.setViewVisibility(containerId, View.GONE);
+        }
     }
 
     private static void setWidgetError(Context context, AppWidgetManager appWidgetManager, int widgetId,
