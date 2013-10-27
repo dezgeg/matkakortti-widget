@@ -23,6 +23,8 @@ import java.util.List;
 import fi.iki.dezgeg.matkakorttiwidget.R;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 
+import static android.util.Log.d;
+
 public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private volatile List<Card> fetchedCards;
@@ -100,6 +102,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                             pref.setChecked(true);
                             SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
                             editor.putString(thisWidgetKey, card.getId()).commit();
+                            d("MainMenuActivity", thisWidgetKey + " setting changing to " + card.getId());
                             return true;
                         }
                     });
@@ -109,6 +112,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 if (!foundSelected && cardList.getPreferenceCount() > 0) {
                     SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
                     editor.putString(thisWidgetKey, fetchedCards.get(0).getId()).commit();
+                    d("MainMenuActivity", thisWidgetKey + " setting changing to " + fetchedCards.get(0).getId());
                     ((CheckBoxPreference) cardList.getPreference(0)).setChecked(true);
                 }
             }
@@ -159,12 +163,11 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
             }
         });
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null)
-            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-        else
+        appWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
             appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
 
+        d("MainMenuActivity", "Launched for AppWidget " + appWidgetId);
         setResult(RESULT_CANCELED);
     }
 
