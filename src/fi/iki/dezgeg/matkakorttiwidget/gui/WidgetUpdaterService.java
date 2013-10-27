@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import java.text.SimpleDateFormat;
@@ -65,7 +66,7 @@ public class WidgetUpdaterService extends IntentService
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widget);
 
         for (int widgetId : appWidgetIds) {
-            String cardId = prefs.getString("cardSelected_" + widgetId, "");
+            String cardId = prefs.getString(Utils.prefKeyForWidgetId(widgetId, "cardSelected"), "");
 
             Card card = null;
             // FIXME use a map
@@ -90,7 +91,15 @@ public class WidgetUpdaterService extends IntentService
     private static void setWidgetText(Context context, AppWidgetManager appWidgetManager, int widgetId,
                                       String name, String money, String period) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget);
-        remoteViews.setTextViewText(R.id.homescreen_name, name);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (prefs.getBoolean(Utils.prefKeyForWidgetId(widgetId, "showName"), true)) {
+            remoteViews.setViewVisibility(R.id.homescreen_name, View.VISIBLE);
+            remoteViews.setTextViewText(R.id.homescreen_name, name);
+        } else {
+            remoteViews.setViewVisibility(R.id.homescreen_name, View.GONE);
+        }
+
         remoteViews.setTextViewText(R.id.homescreen_money_text, money);
         remoteViews.setTextViewText(R.id.homescreen_period_text, period);
 

@@ -31,4 +31,9 @@
             android:key="cardList"
             android:title="Cards on your account">
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="widgetPrefs"
+        android:title="Widget appearance">
+
+    </PreferenceCategory>
 </PreferenceScreen>

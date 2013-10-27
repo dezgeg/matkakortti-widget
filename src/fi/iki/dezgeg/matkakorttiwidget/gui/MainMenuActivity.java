@@ -27,9 +27,17 @@ import static android.util.Log.d;
 
 public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+
     private volatile List<Card> fetchedCards;
     private FetchCardListTask fetchCardListTask;
+
     private static final String[] PREF_KEYS = new String[]{"username", "password"};
+
+    private static final String[][] PER_WIDGET_PREFS = new String[][]{
+            {"showName", "Show name of the card on the widget"},
+            {"autoHidePeriod", "Hide period if no period"},
+            {"autoHideMoney", "Hide cash if period"},
+    };
 
     private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
 
@@ -73,7 +81,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
 
                 // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
-                final String thisWidgetKey = "cardSelected_" + appWidgetId;
+                final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");
                 String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
                 boolean foundSelected = false;
                 List<CheckBoxPreference> buttons = new ArrayList<CheckBoxPreference>();
@@ -141,7 +149,25 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(savedInstanceState);
 
+        appWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
+            appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
+
+        d("MainMenuActivity", "Launched for AppWidget " + appWidgetId);
+        setResult(RESULT_CANCELED);
+
         addPreferencesFromResource(R.xml.main_menu);
+        PreferenceGroup perWidgetPrefs = (PreferenceGroup) findPreference("widgetPrefs");
+        for (String[] pair : PER_WIDGET_PREFS) {
+            String key = pair[0];
+            String text = pair[1];
+
+            CheckBoxPreference pref = new CheckBoxPreference(this);
+            pref.setTitle(text);
+            pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
+
+            perWidgetPrefs.addPreference(pref);
+        }
         setContentView(R.layout.settings_menu);
 
         findPreference("registerLink").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -162,13 +188,6 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 MainMenuActivity.this.finish();
             }
         });
-
-        appWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
-            appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
-
-        d("MainMenuActivity", "Launched for AppWidget " + appWidgetId);
-        setResult(RESULT_CANCELED);
     }
 
     @Override
@@ -191,7 +210,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         updatePrefTitle(prefs, key);
 
-        if (key.startsWith("cardSelected_") && fetchedCards != null) {
+        if (key.startsWith("widget_") && fetchedCards != null) {
             WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
         } else if (key.equals("username") || key.equals("password")) {
                 updateCardList();
