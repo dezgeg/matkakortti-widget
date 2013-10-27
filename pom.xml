@@ -54,7 +54,7 @@
                 <configuration>
                     <mergeManifests>true</mergeManifests>
                     <sdk>
-                        <platform>17</platform>
+                        <platform>18</platform>
                     </sdk>
                 </configuration>
             </plugin>

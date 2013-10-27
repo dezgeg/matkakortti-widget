@@ -1,10 +1,5 @@
 <resources>
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="homescreen_value_size">9pt</dimen>
     <dimen name="homescreen_money_icon_size">8pt</dimen>
     <dimen name="homescreen_period_icon_size">7pt</dimen>
-
 </resources>

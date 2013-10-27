@@ -12,7 +12,6 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Card Name"
         android:id="@+id/homescreen_name"
         android:layout_gravity="center_vertical"
         android:textColor="#ffffff"
@@ -42,7 +41,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="#000000"
-            android:text="$: 123.45"
             android:textColor="#ffffff"
             android:singleLine="true"
             android:textSize="@dimen/homescreen_value_size">
@@ -61,7 +59,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="25.8"
             android:id="@+id/homescreen_period_text"
             android:layout_gravity="center_vertical"
             android:background="#000000"
