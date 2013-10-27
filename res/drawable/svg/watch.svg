@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   color-rendering="auto"
+   color-interpolation="auto"
+   text-rendering="auto"
+   stroke-miterlimit="10"
+   shape-rendering="auto"
+   font-weight="normal"
+   font-style="normal"
+   font-size="12"
+   image-rendering="auto"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   width="1000.001"
+   height="1200.299"
+   sodipodi:docname="watch.svg"
+   style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;font-family:Dialog">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1280"
+     inkscape:window-height="800"
+     id="namedview11"
+     showgrid="false"
+     inkscape:zoom="0.44851479"
+     inkscape:cx="974.6265"
+     inkscape:cy="523.98506"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <!--Unicode Character 'WATCH' (U+231A)-->
+  <defs
+     id="genericDefs" />
+  <g
+     id="g5"
+     transform="matrix(7.5489611,0,0,7.5468286,-97.664684,-1755.3455)"
+     inkscape:export-filename="/cs/fs/home/tmtynkky/Desktop/alogo.png"
+     inkscape:export-xdpi="90"
+     inkscape:export-ydpi="90">
+    <g
+       id="g7">
+      <path
+         d="m 105.75,251.4375 q 18.4219,8.2969 29.0391,24.8203 10.6171,16.5234 10.6171,35.9297 0,19.2656 -10.6171,35.7891 Q 124.1719,364.5 105.75,372.9375 l 0,18.7031 -53.0156,0 0,-18.7031 Q 34.1719,364.5 23.5547,347.9766 12.9375,331.4531 12.9375,312.1875 q 0,-19.4063 10.6172,-35.9297 10.6172,-16.5234 29.1797,-24.8203 l 0,-18.8437 53.0156,0 0,18.8437 z M 79.1719,371.5312 q 24.3281,0 41.8359,-17.5781 17.5078,-17.5781 17.5078,-41.7656 0,-24.4687 -17.4375,-41.9063 -17.4375,-17.4374 -41.9062,-17.4374 -24.1875,0 -41.7657,17.5078 -17.5781,17.5078 -17.5781,41.8359 0,24.3281 17.5078,41.8359 17.5079,17.5078 41.836,17.5078 z m 4.3593,-104.625 -8.7187,0 0,-8.5781 8.7187,0 0,8.5781 z M 102.2344,277.5938 90.7031,301.5 q -6.4687,13.3594 -7.1015,14.2734 -0.6328,0.9141 -1.9688,1.5469 -1.3359,0.6328 -2.8828,0.6328 -0.4219,0 -32.0625,-2.9531 l 0,-5.7656 29.3906,-2.5313 21.2344,-32.0625 4.9219,2.9532 z m 30.7968,38.8124 -8.5781,0 0,-8.5781 8.5781,0 0,8.5781 z m -99,0 -8.7187,0 0,-8.5781 8.7187,0 0,8.5781 z m 49.5,49.6407 -8.7187,0 0,-8.7188 8.7187,0 0,8.7188 z"
+         id="path9"
+         inkscape:connector-curvature="0"
+         style="stroke:none" />
+    </g>
+  </g>
+</svg>
