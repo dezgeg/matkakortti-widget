@@ -2,7 +2,8 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/homescreen_warning_layout"
-    android:background="@color/homescreen_background_color"
+    android:background="@drawable/background"
+    android:padding="0dp"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center">
