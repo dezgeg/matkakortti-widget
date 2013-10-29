@@ -36,7 +36,8 @@ public class WidgetUpdaterService extends IntentService
     {
         if (initialUpdate) {
             initialUpdate = false;
-                updateWidgets(getApplicationContext(), new ArrayList<Card>(), "Loading...");
+            updateWidgets(getApplicationContext(), new ArrayList<Card>(),
+                    getResources().getText(R.string.widget_loading));
         }
 
         Throwable err;
@@ -49,7 +50,8 @@ public class WidgetUpdaterService extends IntentService
         }
         if (Utils.isConnectionProblemRelatedException(err)) {
             if (!validDataOnWidgets)
-                updateWidgets(getApplicationContext(), new ArrayList<Card>(), "Connection error.");
+                updateWidgets(getApplicationContext(), new ArrayList<Card>(),
+                        getResources().getText(R.string.widget_connection_error));
             return;
         }
         updateWidgets(getApplicationContext(), new ArrayList<Card>(), err.getMessage());
@@ -60,7 +62,7 @@ public class WidgetUpdaterService extends IntentService
     }
 
     // 3rd parameter is total hack.
-    public static void updateWidgets(Context context, List<Card> cards, String error) {
+    public static void updateWidgets(Context context, List<Card> cards, CharSequence error) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -79,7 +81,8 @@ public class WidgetUpdaterService extends IntentService
                 }
             }
             if (card == null) {
-                String e = error != null ? error: "Card doesn't exist";
+                CharSequence e = error != null ? error :
+                        context.getResources().getText(R.string.widget_card_doenst_exist);
                 setWidgetError(context, appWidgetManager, widgetId, e);
                 continue;
             }
@@ -134,7 +137,7 @@ public class WidgetUpdaterService extends IntentService
     }
 
     private static void setWidgetError(Context context, AppWidgetManager appWidgetManager, int widgetId,
-                                       String error) {
+                                       CharSequence error) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.homescreen_widget_warning);
         remoteViews.setTextViewText(R.id.homescreen_warning_text, error);
 

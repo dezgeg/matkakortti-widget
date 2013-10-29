@@ -28,7 +28,7 @@ public class MatkakorttiApi {
     private String password;
     public static final Pattern CARDS_JSON_PATTERN = Pattern.compile(".*?parseJSON\\('(.*)'\\).*", Pattern.DOTALL);
     public static final Pattern DATE_PATTERN = Pattern.compile("^/Date\\(([0-9]+)\\)/$");
-    public static final Pattern SESSION_EXISTS_PATTERN = Pattern.compile(".*on toinen avoin istunto.*");
+    public static final Pattern SESSION_EXISTS_PATTERN = Pattern.compile(".*on toinen avoin istunto.*"); // TODO english
 
     public MatkakorttiApi(String username, String password) {
         this.username = username;
@@ -61,7 +61,7 @@ public class MatkakorttiApi {
                 return cards;
             }
         }
-        throw new MatkakorttiException("No voi vittu");
+        throw new MatkakorttiException("Couldn't locate JSON data in OmaMatkakortti service.");
     }
 
     private MechanizeAgent login() throws Exception {

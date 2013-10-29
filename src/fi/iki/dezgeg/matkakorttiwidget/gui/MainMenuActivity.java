@@ -33,10 +33,11 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
 
     private static final String[] PREF_KEYS = new String[]{"username", "password"};
 
+    private static final String PER_WIDGET_PREF_STRING_PREFIX = "settings_widgetPrefs_";
     private static final String[][] PER_WIDGET_PREFS = new String[][]{
-            {"showName", "Show name of the card on the widget", "true"},
-            {"autoHideMoney", "Hide cash if period", "false"},
-            {"autoHidePeriod", "Hide period if no period", "false"},
+            {"showName", "true"},
+            {"autoHideMoney", "false"},
+            {"autoHidePeriod", "false"},
     };
 
     private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
@@ -68,13 +69,15 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
                 text.setEnabled(false);
 
-                String escaped;
+                CharSequence escaped;
                 if (Utils.isConnectionProblemRelatedException(result.getException()))
-                    escaped = "Problem with Internet connection.";
+                    escaped = getResources().getText(R.string.settings_errors_connectionError);
                 else
                      escaped = result.getException().getMessage(); // TODO: escape
 
-                text.setTitle(Html.fromHtml("<font color='#FF0000'>Error: " + escaped + "</font>"));
+                text.setTitle(Html.fromHtml("<font color='#FF0000'>" +
+                        getResources().getText(R.string.settings_errors_apiErrorPrefix) + escaped +
+                        "</font>"));
                 cardList.addPreference(text);
             } else {
                 fetchedCards = result.getCardList();
@@ -160,11 +163,12 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         PreferenceGroup perWidgetPrefs = (PreferenceGroup) findPreference("widgetPrefs");
         for (String[] pair : PER_WIDGET_PREFS) {
             String key = pair[0];
-            String text = pair[1];
-            boolean defaultValue = Boolean.valueOf(pair[2]);
+            boolean defaultValue = Boolean.valueOf(pair[1]);
 
             CheckBoxPreference pref = new CheckBoxPreference(this);
-            pref.setTitle(text);
+            int resId = getResources().getIdentifier(PER_WIDGET_PREF_STRING_PREFIX + key,
+                    "string", "fi.iki.dezgeg.matkakorttiwidget");
+            pref.setTitle(getResources().getString(resId));
             pref.setDefaultValue(defaultValue);
             pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
 
