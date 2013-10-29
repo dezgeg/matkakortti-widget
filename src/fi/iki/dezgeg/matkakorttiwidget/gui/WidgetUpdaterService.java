@@ -157,10 +157,4 @@ public class WidgetUpdaterService extends IntentService
 
         appWidgetManager.updateAppWidget(widgetId, remoteViews);
     }
-
-    @Override
-    public IBinder onBind(Intent intent)
-    {
-        return null;
-    }
 }
