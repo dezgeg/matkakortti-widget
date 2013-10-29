@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -111,9 +112,12 @@ public class WidgetUpdaterService extends IntentService
         setTextOrHide(remoteViews, R.id.homescreen_money_container, R.id.homescreen_money_text,
                 c.getMoney() + "", showMoney);
 
-        String periodEnd = "---";
-        if (c.getPeriodExpiryDate() != null)
+        String periodEnd = " - - -";
+        if (c.getPeriodExpiryDate() != null) {
             periodEnd = new SimpleDateFormat("dd.MM.").format(c.getPeriodExpiryDate()) + "";
+        } else {
+            remoteViews.setTextColor(R.id.homescreen_period_text, Color.GRAY);
+        }
         setTextOrHide(remoteViews, R.id.homescreen_period_container, R.id.homescreen_period_text,
                 periodEnd, showPeriod);
 

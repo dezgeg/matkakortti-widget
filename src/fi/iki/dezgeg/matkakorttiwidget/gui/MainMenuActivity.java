@@ -34,9 +34,9 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     private static final String[] PREF_KEYS = new String[]{"username", "password"};
 
     private static final String[][] PER_WIDGET_PREFS = new String[][]{
-            {"showName", "Show name of the card on the widget"},
-            {"autoHideMoney", "Hide cash if period"},
-            {"autoHidePeriod", "Hide period if no period"},
+            {"showName", "Show name of the card on the widget", "true"},
+            {"autoHideMoney", "Hide cash if period", "false"},
+            {"autoHidePeriod", "Hide period if no period", "false"},
     };
 
     private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
@@ -161,9 +161,11 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         for (String[] pair : PER_WIDGET_PREFS) {
             String key = pair[0];
             String text = pair[1];
+            boolean defaultValue = Boolean.valueOf(pair[2]);
 
             CheckBoxPreference pref = new CheckBoxPreference(this);
             pref.setTitle(text);
+            pref.setDefaultValue(defaultValue);
             pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
 
             perWidgetPrefs.addPreference(pref);
