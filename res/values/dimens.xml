@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="homescreen_value_size">18dp</dimen>
-    <dimen name="homescreen_money_icon_size">15dp</dimen>
-    <dimen name="homescreen_period_icon_size">14dp</dimen>
 </resources>
