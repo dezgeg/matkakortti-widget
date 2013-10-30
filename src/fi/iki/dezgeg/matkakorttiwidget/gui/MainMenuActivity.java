@@ -37,7 +37,6 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
     private static final String PER_WIDGET_PREF_STRING_PREFIX = "settings_widgetPrefs_";
     private static final String[][] PER_WIDGET_PREFS = new String[][]{
             {"showName", "true"},
-            {"autoHideMoney", "false"},
             {"autoHidePeriod", "false"},
     };
 

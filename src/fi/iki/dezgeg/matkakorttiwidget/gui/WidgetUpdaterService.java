@@ -117,12 +117,9 @@ public class WidgetUpdaterService extends IntentService
         // Show period if: autoHidePeriod not set OR the user has period
         // Show money  if: period NOT show OR the money is non-zero OR
         boolean showPeriod = !getBoolPref(prefs, widgetId, "autoHidePeriod", false) || c.getPeriodExpiryDate() != null;
-        boolean showMoney = !showPeriod ||
-                !getBoolPref(prefs, widgetId, "autoHideMoney", false) ||
-                c.getMoney().compareTo(BigDecimal.ZERO) > 0;
 
         setTextOrHide(remoteViews, R.id.homescreen_money_container, R.id.homescreen_money_text,
-                c.getMoney() + "", showMoney);
+                c.getMoney() + "", true);
 
         String periodEnd = "- - -";
         if (c.getPeriodExpiryDate() != null) {
