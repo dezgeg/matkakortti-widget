@@ -71,13 +71,12 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
 
                 CharSequence escaped;
                 if (Utils.isConnectionProblemRelatedException(result.getException()))
-                    escaped = getResources().getText(R.string.settings_errors_connectionError);
+                    escaped = localize(R.string.settings_errors_connectionError);
                 else
-                     escaped = result.getException().getMessage(); // TODO: escape
+                    escaped = localize(R.string.settings_errors_apiErrorPrefix) + " " +
+                            result.getException().getMessage(); // TODO: escape
 
-                text.setTitle(Html.fromHtml("<font color='#FF0000'>" +
-                        getResources().getText(R.string.settings_errors_apiErrorPrefix) + escaped +
-                        "</font>"));
+                text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
                 cardList.addPreference(text);
             } else {
                 fetchedCards = result.getCardList();
@@ -168,7 +167,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
             CheckBoxPreference pref = new CheckBoxPreference(this);
             int resId = getResources().getIdentifier(PER_WIDGET_PREF_STRING_PREFIX + key,
                     "string", "fi.iki.dezgeg.matkakorttiwidget");
-            pref.setTitle(getResources().getString(resId));
+            pref.setTitle(localize(resId));
             pref.setDefaultValue(defaultValue);
             pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
 
@@ -194,6 +193,10 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 MainMenuActivity.this.finish();
             }
         });
+    }
+
+    private CharSequence localize(int resId) {
+        return getResources().getText(resId);
     }
 
     @Override

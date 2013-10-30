@@ -3,24 +3,24 @@
     <string name="app_name">Matkakortti Widget</string>
 
     <!-- Settings -->
-    <string name="settings_accInfo_category">Account information</string>
-    <string name="settings_accInfo_username">Username</string>
-    <string name="settings_accInfo_password">Password</string>
-    <string name="settings_accInfo_registerLink_title">Don\'t have an Oma Matkakortti account?</string>
-    <string name="settings_accInfo_registerLink_summary">Register here.</string>
+    <string name="settings_accInfo_category">Tunnuksen tiedot</string>
+    <string name="settings_accInfo_username">Käyttäjätunnus</string>
+    <string name="settings_accInfo_password">Salasana</string>
+    <string name="settings_accInfo_registerLink_title">Rekisteröidy Oma Matkakortti-palveluun</string>
+    <string name="settings_accInfo_registerLink_summary"></string>
 
-    <string name="settings_cardList_category">Cards on your account</string>
+    <string name="settings_cardList_category">Tunnuksella olevat matkakortit</string>
 
-    <string name="settings_widgetPrefs_category">Widget appearance</string>
-    <string name="settings_widgetPrefs_showName">Show name of the card on the widget</string>
+    <string name="settings_widgetPrefs_category">Widgetin ulkonäkö</string>
+    <string name="settings_widgetPrefs_showName">Näytä matkakortin nimi</string>
     <string name="settings_widgetPrefs_autoHideMoney">Hide cash if period</string>
-    <string name="settings_widgetPrefs_autoHidePeriod">Hide period if no period</string>
+    <string name="settings_widgetPrefs_autoHidePeriod">Piilota kausi</string>
 
-    <string name="settings_errors_connectionError">Problem with Internet connection.</string>
-    <string name="settings_errors_apiErrorPrefix">Error: </string>
+    <string name="settings_errors_connectionError">Virhe Internet-yhteydessä palveluun yhdistettäessä.</string>
+    <string name="settings_errors_apiErrorPrefix">Virhe:</string>
 
     <!-- Widget -->
-    <string name="widget_loading">Connecting...</string>
-    <string name="widget_connection_error">Connection error.</string>
-    <string name="widget_card_doenst_exist">Card doesn\'t exist</string>
+    <string name="widget_loading">Ladataan&#8230;</string>
+    <string name="widget_connection_error">Yhteys-&#10;virhe</string>
+    <string name="widget_card_doenst_exist">Matkakorttia ei enää ole</string>
 </resources>
