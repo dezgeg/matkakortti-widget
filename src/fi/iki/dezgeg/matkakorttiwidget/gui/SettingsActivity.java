@@ -26,7 +26,7 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiException;
 
 import static android.util.Log.d;
 
-public class MainMenuActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     private volatile List<Card> fetchedCards;
@@ -64,7 +64,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
             appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
 
-        d("MainMenuActivity", "Launched for AppWidget " + appWidgetId);
+        d("SettingsActivity", "Launched for AppWidget " + appWidgetId);
         setResult(RESULT_CANCELED);
 
         addPreferencesFromResource(R.xml.main_menu);
@@ -98,8 +98,8 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
             public void onClick(View view) {
                 Intent resultValue = new Intent();
                 resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                MainMenuActivity.this.setResult(RESULT_OK, resultValue);
-                MainMenuActivity.this.finish();
+                SettingsActivity.this.setResult(RESULT_OK, resultValue);
+                SettingsActivity.this.finish();
             }
         });
     }
@@ -167,8 +167,8 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         protected void onPreExecute() {
             super.onPreExecute();
             getCardList().removeAll();
-            MainMenuActivity.this.setProgressBarIndeterminate(true);
-            MainMenuActivity.this.setProgressBarIndeterminateVisibility(true);
+            SettingsActivity.this.setProgressBarIndeterminate(true);
+            SettingsActivity.this.setProgressBarIndeterminateVisibility(true);
         }
 
         @Override
@@ -191,7 +191,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
 
                 fetchedCards = null;
-                EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
+                EditTextPreference text = new EditTextPreference(SettingsActivity.this);
                 text.setEnabled(false);
 
                 CharSequence escaped;
@@ -202,7 +202,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                             exc.getMessage(); // TODO: escape
                 else {
                     escaped = localize(R.string.settings_errors_unexpectedError);
-                    Utils.reportException("MainMenuActivity", exc);
+                    Utils.reportException("SettingsActivity", exc);
                 }
 
                 text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
@@ -217,7 +217,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 boolean foundSelected = false;
                 List<CheckBoxPreference> buttons = new ArrayList<CheckBoxPreference>();
                 for (final Card card : result.getCardList()) {
-                    final CheckBoxPreference pref = new CheckBoxPreference(MainMenuActivity.this);
+                    final CheckBoxPreference pref = new CheckBoxPreference(SettingsActivity.this);
                     pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
                     pref.setTitle(card.getName());
                     if (!foundSelected && card.getId().equals(selectedCardId)) {
@@ -241,7 +241,7 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                             pref.setChecked(true);
                             SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
                             editor.putString(thisWidgetKey, card.getId()).commit();
-                            d("MainMenuActivity", thisWidgetKey + " setting changing to " + card.getId());
+                            d("SettingsActivity", thisWidgetKey + " setting changing to " + card.getId());
                             return true;
                         }
                     });
@@ -251,11 +251,11 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
                 if (!foundSelected && cardList.getPreferenceCount() > 0) {
                     SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
                     editor.putString(thisWidgetKey, fetchedCards.get(0).getId()).commit();
-                    d("MainMenuActivity", thisWidgetKey + " setting changing to " + fetchedCards.get(0).getId());
+                    d("SettingsActivity", thisWidgetKey + " setting changing to " + fetchedCards.get(0).getId());
                     ((CheckBoxPreference) cardList.getPreference(0)).setChecked(true);
                 }
             }
-            MainMenuActivity.this.setProgressBarIndeterminateVisibility(false);
+            SettingsActivity.this.setProgressBarIndeterminateVisibility(false);
             updateOkButtonEnabledState();
         }
     }

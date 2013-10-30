@@ -13,7 +13,7 @@ public class MatkakorttiWidgetApp extends Application {
     private static SharedPreferences prefs;
 
     // Synchronized since when the app is started from the IDE,
-    // the MainMenuActivity and the widget updater run concurrently ->
+    // the SettingsActivity and the widget updater run concurrently ->
     // both log in to Oma Matkakortti simultaneously -> session errors.
     public static synchronized List<Card> getCardList() throws Exception {
         String username = prefs.getString("username", "<not set>");

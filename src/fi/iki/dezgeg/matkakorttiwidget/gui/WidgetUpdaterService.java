@@ -8,12 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,7 +150,7 @@ public class WidgetUpdaterService extends IntentService
 
     private static void finishWidgetUpdate(Context context, AppWidgetManager appWidgetManager,
                                            int widgetId, RemoteViews remoteViews, int rootWidgetId) {
-        Intent reconfigureIntent = new Intent(context, MainMenuActivity.class);
+        Intent reconfigureIntent = new Intent(context, SettingsActivity.class);
 
         reconfigureIntent.setAction("fi.iki.dezgeg.matkakorttiwidget.APPWIDGET_CONFIGURE");
         reconfigureIntent.putExtra("EXTRA_APPWIDGET_ID", widgetId);
