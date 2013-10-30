@@ -40,105 +40,6 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
             {"autoHidePeriod", "false"},
     };
 
-    private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            getCardList().removeAll();
-            MainMenuActivity.this.setProgressBarIndeterminate(true);
-            MainMenuActivity.this.setProgressBarIndeterminateVisibility(true);
-        }
-
-        @Override
-        protected MatkakorttiApiResult doInBackground(Void... unused) {
-            try {
-                return new MatkakorttiApiResult(MatkakorttiWidgetApp.getCardList());
-            } catch (Exception e) {
-                return new MatkakorttiApiResult(e);
-            }
-        }
-
-        @Override
-        protected void onPostExecute(MatkakorttiApiResult result) {
-            super.onPostExecute(result);
-
-            final PreferenceGroup cardList = getCardList();
-            Exception exc = result.getException();
-
-            if (exc != null) {
-                MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
-
-                fetchedCards = null;
-                EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
-                text.setEnabled(false);
-
-                CharSequence escaped;
-                if (Utils.isConnectionProblemRelatedException(exc))
-                    escaped = localize(R.string.settings_errors_connectionError);
-                else if (apiExc != null && !apiExc.isInternalError())
-                    escaped = localize(R.string.settings_errors_apiErrorPrefix) + " " +
-                            exc.getMessage(); // TODO: escape
-                else {
-                    escaped = localize(R.string.settings_errors_unexpectedError);
-                    Utils.reportException("MainMenuActivity", exc);
-                }
-
-                text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
-                cardList.addPreference(text);
-            } else {
-                fetchedCards = result.getCardList();
-                WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
-
-                // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
-                final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");
-                String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
-                boolean foundSelected = false;
-                List<CheckBoxPreference> buttons = new ArrayList<CheckBoxPreference>();
-                for (final Card card : result.getCardList()) {
-                    final CheckBoxPreference pref = new CheckBoxPreference(MainMenuActivity.this);
-                    pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
-                    pref.setTitle(card.getName());
-                    if (!foundSelected && card.getId().equals(selectedCardId)) {
-                        pref.setChecked(true);
-                        foundSelected = true;
-                    }
-                    pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference unused) {
-                            // !!!!! When we are called, the box has already changed state.
-
-                            // Un-checking the selected box.
-                            if (!pref.isChecked()) {
-                                pref.setChecked(true);
-                                return true;
-                            }
-                            for (int i = 0; i < cardList.getPreferenceCount(); i++) {
-                                CheckBoxPreference cp = ((CheckBoxPreference) cardList.getPreference(i));
-                                cp.setChecked(false);
-                            }
-                            pref.setChecked(true);
-                            SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
-                            editor.putString(thisWidgetKey, card.getId()).commit();
-                            d("MainMenuActivity", thisWidgetKey + " setting changing to " + card.getId());
-                            return true;
-                        }
-                    });
-                    cardList.addPreference(pref);
-                }
-
-                if (!foundSelected && cardList.getPreferenceCount() > 0) {
-                    SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
-                    editor.putString(thisWidgetKey, fetchedCards.get(0).getId()).commit();
-                    d("MainMenuActivity", thisWidgetKey + " setting changing to " + fetchedCards.get(0).getId());
-                    ((CheckBoxPreference) cardList.getPreference(0)).setChecked(true);
-                }
-            }
-            MainMenuActivity.this.setProgressBarIndeterminateVisibility(false);
-            updateOkButtonEnabledState();
-        }
-    }
-
     private PreferenceGroup getCardList() {
         return (PreferenceGroup) findPreference("cardList");
     }
@@ -259,25 +160,125 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
         }
     }
 
-}
+    // Helper classes
+    private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
 
-class MatkakorttiApiResult {
-    private List<Card> cardList;
-    private Exception exception;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            getCardList().removeAll();
+            MainMenuActivity.this.setProgressBarIndeterminate(true);
+            MainMenuActivity.this.setProgressBarIndeterminateVisibility(true);
+        }
 
-    MatkakorttiApiResult(List<Card> cardList) {
-        this.cardList = cardList;
+        @Override
+        protected MatkakorttiApiResult doInBackground(Void... unused) {
+            try {
+                return new MatkakorttiApiResult(MatkakorttiWidgetApp.getCardList());
+            } catch (Exception e) {
+                return new MatkakorttiApiResult(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(MatkakorttiApiResult result) {
+            super.onPostExecute(result);
+
+            final PreferenceGroup cardList = getCardList();
+            Exception exc = result.getException();
+
+            if (exc != null) {
+                MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
+
+                fetchedCards = null;
+                EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
+                text.setEnabled(false);
+
+                CharSequence escaped;
+                if (Utils.isConnectionProblemRelatedException(exc))
+                    escaped = localize(R.string.settings_errors_connectionError);
+                else if (apiExc != null && !apiExc.isInternalError())
+                    escaped = localize(R.string.settings_errors_apiErrorPrefix) + " " +
+                            exc.getMessage(); // TODO: escape
+                else {
+                    escaped = localize(R.string.settings_errors_unexpectedError);
+                    Utils.reportException("MainMenuActivity", exc);
+                }
+
+                text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
+                cardList.addPreference(text);
+            } else {
+                fetchedCards = result.getCardList();
+                WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
+
+                // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
+                final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");
+                String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
+                boolean foundSelected = false;
+                List<CheckBoxPreference> buttons = new ArrayList<CheckBoxPreference>();
+                for (final Card card : result.getCardList()) {
+                    final CheckBoxPreference pref = new CheckBoxPreference(MainMenuActivity.this);
+                    pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
+                    pref.setTitle(card.getName());
+                    if (!foundSelected && card.getId().equals(selectedCardId)) {
+                        pref.setChecked(true);
+                        foundSelected = true;
+                    }
+                    pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference unused) {
+                            // !!!!! When we are called, the box has already changed state.
+
+                            // Un-checking the selected box.
+                            if (!pref.isChecked()) {
+                                pref.setChecked(true);
+                                return true;
+                            }
+                            for (int i = 0; i < cardList.getPreferenceCount(); i++) {
+                                CheckBoxPreference cp = ((CheckBoxPreference) cardList.getPreference(i));
+                                cp.setChecked(false);
+                            }
+                            pref.setChecked(true);
+                            SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
+                            editor.putString(thisWidgetKey, card.getId()).commit();
+                            d("MainMenuActivity", thisWidgetKey + " setting changing to " + card.getId());
+                            return true;
+                        }
+                    });
+                    cardList.addPreference(pref);
+                }
+
+                if (!foundSelected && cardList.getPreferenceCount() > 0) {
+                    SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
+                    editor.putString(thisWidgetKey, fetchedCards.get(0).getId()).commit();
+                    d("MainMenuActivity", thisWidgetKey + " setting changing to " + fetchedCards.get(0).getId());
+                    ((CheckBoxPreference) cardList.getPreference(0)).setChecked(true);
+                }
+            }
+            MainMenuActivity.this.setProgressBarIndeterminateVisibility(false);
+            updateOkButtonEnabledState();
+        }
     }
 
-    MatkakorttiApiResult(Exception exception) {
-        this.exception = exception;
-    }
 
-    List<Card> getCardList() {
-        return cardList;
-    }
+    static class MatkakorttiApiResult {
+        private List<Card> cardList;
+        private Exception exception;
 
-    Exception getException() {
-        return exception;
+        MatkakorttiApiResult(List<Card> cardList) {
+            this.cardList = cardList;
+        }
+
+        MatkakorttiApiResult(Exception exception) {
+            this.exception = exception;
+        }
+
+        List<Card> getCardList() {
+            return cardList;
+        }
+
+        Exception getException() {
+            return exception;
+        }
     }
 }
