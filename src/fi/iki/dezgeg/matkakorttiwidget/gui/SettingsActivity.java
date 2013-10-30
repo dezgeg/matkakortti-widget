@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
@@ -103,8 +104,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         });
     }
 
-    private CharSequence localize(int resId) {
-        return getResources().getText(resId);
+    private CharSequence localize(int resId, Object... args) {
+        return getResources().getString(resId, args);
     }
 
     @Override
@@ -224,6 +225,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                 final CheckBoxPreference pref = new CheckBoxPreference(SettingsActivity.this);
                 pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
                 pref.setTitle(card.getName());
+                pref.setSummary(radioButtonSummaryForCard(card));
                 if (!foundSelected && card.getId().equals(selectedCardId)) {
                     pref.setChecked(true);
                     foundSelected = true;
@@ -255,6 +257,17 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                 setSelectedCardForThisWidget(fetchedCards.get(0).getId(), thisWidgetKey);
                 ((CheckBoxPreference) cardListPrefGroup.getPreference(0)).setChecked(true);
             }
+        }
+
+        private CharSequence radioButtonSummaryForCard(Card card) {
+            CharSequence period;
+            if (card.getPeriodExpiryDate() == null)
+                period = localize(R.string.settings_cardList_card_noPeriod);
+            else
+                period = localize(R.string.settings_cardList_card_hasPeriod,
+                        new SimpleDateFormat("dd.MM.yyyy").format(card.getPeriodExpiryDate()));
+            CharSequence money = localize(R.string.settings_cardList_card_hasMoney, card.getMoney());
+            return money.toString() + " " + period;
         }
 
         private void setSelectedCardForThisWidget(String cardId, String thisWidgetKey) {
