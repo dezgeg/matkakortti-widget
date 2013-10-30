@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
@@ -40,7 +39,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             {"autoHidePeriod", "false"},
     };
 
-    private PreferenceGroup getCardList() {
+    private PreferenceGroup getCardListPrefGroup() {
         return (PreferenceGroup) findPreference("cardList");
     }
 
@@ -166,7 +165,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            getCardList().removeAll();
+            getCardListPrefGroup().removeAll();
             SettingsActivity.this.setProgressBarIndeterminate(true);
             SettingsActivity.this.setProgressBarIndeterminateVisibility(true);
         }
@@ -183,11 +182,13 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         @Override
         protected void onPostExecute(MatkakorttiApiResult result) {
             super.onPostExecute(result);
-
-            final PreferenceGroup cardList = getCardList();
             Exception exc = result.getException();
 
-            if (exc != null) {
+            if (exc == null) {
+                fetchedCards = result.getCardList();
+                WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
+                populateCardListPrefGroup();
+            } else {
                 MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
 
                 fetchedCards = null;
@@ -206,60 +207,62 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                 }
 
                 text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
-                cardList.addPreference(text);
-            } else {
-                fetchedCards = result.getCardList();
-                WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
-
-                // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
-                final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");
-                String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
-                boolean foundSelected = false;
-                List<CheckBoxPreference> buttons = new ArrayList<CheckBoxPreference>();
-                for (final Card card : result.getCardList()) {
-                    final CheckBoxPreference pref = new CheckBoxPreference(SettingsActivity.this);
-                    pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
-                    pref.setTitle(card.getName());
-                    if (!foundSelected && card.getId().equals(selectedCardId)) {
-                        pref.setChecked(true);
-                        foundSelected = true;
-                    }
-                    pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference unused) {
-                            // !!!!! When we are called, the box has already changed state.
-
-                            // Un-checking the selected box.
-                            if (!pref.isChecked()) {
-                                pref.setChecked(true);
-                                return true;
-                            }
-                            for (int i = 0; i < cardList.getPreferenceCount(); i++) {
-                                CheckBoxPreference cp = ((CheckBoxPreference) cardList.getPreference(i));
-                                cp.setChecked(false);
-                            }
-                            pref.setChecked(true);
-                            SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
-                            editor.putString(thisWidgetKey, card.getId()).commit();
-                            d("SettingsActivity", thisWidgetKey + " setting changing to " + card.getId());
-                            return true;
-                        }
-                    });
-                    cardList.addPreference(pref);
-                }
-
-                if (!foundSelected && cardList.getPreferenceCount() > 0) {
-                    SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
-                    editor.putString(thisWidgetKey, fetchedCards.get(0).getId()).commit();
-                    d("SettingsActivity", thisWidgetKey + " setting changing to " + fetchedCards.get(0).getId());
-                    ((CheckBoxPreference) cardList.getPreference(0)).setChecked(true);
-                }
+                getCardListPrefGroup().addPreference(text);
             }
             SettingsActivity.this.setProgressBarIndeterminateVisibility(false);
             updateOkButtonEnabledState();
         }
-    }
 
+        private void populateCardListPrefGroup() {
+            final PreferenceGroup cardListPrefGroup = getCardListPrefGroup();
+
+            // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
+            final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");
+            String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
+            boolean foundSelected = false;
+            for (final Card card : fetchedCards) {
+                final CheckBoxPreference pref = new CheckBoxPreference(SettingsActivity.this);
+                pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
+                pref.setTitle(card.getName());
+                if (!foundSelected && card.getId().equals(selectedCardId)) {
+                    pref.setChecked(true);
+                    foundSelected = true;
+                }
+                pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    // !!!!! When we are called, the box has already changed state.
+                    @Override
+                    public boolean onPreferenceClick(Preference unused) {
+                        // Trivial case: Un-checking the selected box, undo it.
+                        if (!pref.isChecked()) {
+                            pref.setChecked(true);
+                            return true;
+                        }
+                        // Clear all others...
+                        for (int i = 0; i < cardListPrefGroup.getPreferenceCount(); i++) {
+                            CheckBoxPreference cp = ((CheckBoxPreference) cardListPrefGroup.getPreference(i));
+                            cp.setChecked(false);
+                        }
+                        pref.setChecked(true); // ...but not this one.
+
+                        setSelectedCardForThisWidget(card.getId(), thisWidgetKey);
+                        return true;
+                    }
+                });
+                cardListPrefGroup.addPreference(pref);
+            }
+
+            if (!foundSelected && cardListPrefGroup.getPreferenceCount() > 0) {
+                setSelectedCardForThisWidget(fetchedCards.get(0).getId(), thisWidgetKey);
+                ((CheckBoxPreference) cardListPrefGroup.getPreference(0)).setChecked(true);
+            }
+        }
+
+        private void setSelectedCardForThisWidget(String cardId, String thisWidgetKey) {
+            SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
+            editor.putString(thisWidgetKey, cardId).commit();
+            d("SettingsActivity", thisWidgetKey + " setting changing to " + cardId);
+        }
+    }
 
     static class MatkakorttiApiResult {
         private List<Card> cardList;
