@@ -124,7 +124,7 @@ public class WidgetUpdaterService extends IntentService
         setTextOrHide(remoteViews, R.id.homescreen_money_container, R.id.homescreen_money_text,
                 c.getMoney() + "", showMoney);
 
-        String periodEnd = " - - -";
+        String periodEnd = "- - -";
         if (c.getPeriodExpiryDate() != null) {
             periodEnd = new SimpleDateFormat("dd.MM.").format(c.getPeriodExpiryDate()) + "";
         } else {

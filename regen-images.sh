@@ -1,12 +1,25 @@
 #!/bin/bash -e
 cd $(dirname $0)/res/drawable
 
+make_icon() {
+    kind=$1
+    resolution=$2
+    file=$3
+
+    convert $file -resize ${resolution}x ../drawable-$kind/$file
+}
+
 convert ok.png -colorspace gray ok_gray.png
 
+# 12 px icons
 for f in euro_sign watch; do
-    # inkscape svg/$f.svg --export-png=$f.png --export-width=64
-    convert svg/$f.svg -background none -resize 128x $f.png
-    convert -transparent white +level-colors yellow, $f.png $f.png
+    convert -background none svg/$f.svg -resize 72x $f.png
+    convert +level-colors "#ebcd12," $f.png $f.png
+
+    make_icon "mdpi" 12 "$f.png"
+    make_icon "hdpi" 18 "$f.png"
+    make_icon "xhdpi" 24 "$f.png"
+    make_icon "xxhdpi" 36 "$f.png"
 done
 
 # Someone might say this is a gross hack. And they'd be right.
@@ -17,13 +30,6 @@ convert +append temp-left.png temp-right.png icon.png
 
 rm temp*
 
-make_icon() {
-    kind=$1
-    resolution=$2
-    file=$3
-
-    convert $file -resize ${resolution}x ../drawable-$kind/$file
-}
 make_icon "mdpi" 48 "icon.png"
 make_icon "hdpi" 72 "icon.png"
 make_icon "xhdpi" 96 "icon.png"
