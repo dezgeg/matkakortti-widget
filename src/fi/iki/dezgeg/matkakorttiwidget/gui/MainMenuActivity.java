@@ -22,6 +22,7 @@ import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
+import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiException;
 
 import static android.util.Log.d;
 
@@ -64,17 +65,25 @@ public class MainMenuActivity extends PreferenceActivity implements OnSharedPref
             super.onPostExecute(result);
 
             final PreferenceGroup cardList = getCardList();
-            if (result.getException() != null) {
+            Exception exc = result.getException();
+
+            if (exc != null) {
+                MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
+
                 fetchedCards = null;
                 EditTextPreference text = new EditTextPreference(MainMenuActivity.this);
                 text.setEnabled(false);
 
                 CharSequence escaped;
-                if (Utils.isConnectionProblemRelatedException(result.getException()))
+                if (Utils.isConnectionProblemRelatedException(exc))
                     escaped = localize(R.string.settings_errors_connectionError);
-                else
+                else if (apiExc != null && !apiExc.isInternalError())
                     escaped = localize(R.string.settings_errors_apiErrorPrefix) + " " +
-                            result.getException().getMessage(); // TODO: escape
+                            exc.getMessage(); // TODO: escape
+                else {
+                    escaped = localize(R.string.settings_errors_unexpectedError);
+                    Utils.reportException("MainMenuActivity", exc);
+                }
 
                 text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
                 cardList.addPreference(text);

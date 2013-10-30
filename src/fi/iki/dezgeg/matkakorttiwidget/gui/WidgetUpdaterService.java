@@ -20,6 +20,7 @@ import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
+import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiException;
 
 public class WidgetUpdaterService extends IntentService
 {
@@ -41,10 +42,14 @@ public class WidgetUpdaterService extends IntentService
         }
 
         Throwable err;
+        boolean internalError = true;
         try {
             updateWidgets(getApplicationContext(), MatkakorttiWidgetApp.getCardList());
             validDataOnWidgets = true;
             return;
+        } catch (MatkakorttiException me) {
+            err = me;
+            internalError = me.isInternalError();
         } catch (Exception e) {
             err = e;
         }
@@ -54,7 +59,11 @@ public class WidgetUpdaterService extends IntentService
                         getResources().getText(R.string.widget_connection_error));
             return;
         }
-        updateWidgets(getApplicationContext(), new ArrayList<Card>(), err.getMessage());
+        if (internalError)
+            Utils.reportException("WidgetUpdaterService", err);
+
+        updateWidgets(getApplicationContext(), new ArrayList<Card>(),
+                getResources().getText(R.string.widget_other_error));
     }
 
     public static void updateWidgets(Context context, List<Card> cards) {
@@ -82,7 +91,7 @@ public class WidgetUpdaterService extends IntentService
             }
             if (card == null) {
                 CharSequence e = error != null ? error :
-                        context.getResources().getText(R.string.widget_card_doenst_exist);
+                        context.getResources().getText(R.string.widget_other_error);
                 setWidgetError(context, appWidgetManager, widgetId, e);
                 continue;
             }

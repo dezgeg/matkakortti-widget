@@ -1,19 +1,18 @@
 package fi.iki.dezgeg.matkakorttiwidget.matkakortti;
 
 public class MatkakorttiException extends RuntimeException {
-    public MatkakorttiException(Throwable throwable) {
-        super(throwable);
+    private boolean isInternalError;
+
+    public boolean isInternalError() {
+        return isInternalError;
     }
 
-    public MatkakorttiException() {
-        super();
+    public MatkakorttiException(String detailMessage, boolean isInternalError) {
+        this(detailMessage, null, isInternalError);
     }
 
-    public MatkakorttiException(String detailMessage) {
-        super(detailMessage);
-    }
-
-    public MatkakorttiException(String detailMessage, Throwable throwable) {
+    public MatkakorttiException(String detailMessage, Throwable throwable, boolean isInternalError) {
         super(detailMessage, throwable);
+        this.isInternalError = isInternalError;
     }
 }
