@@ -19,6 +19,7 @@
     <string name="settings_widgetPrefs_autoHideMoney">Hide cash if period</string>
     <string name="settings_widgetPrefs_autoHidePeriod">Piilota kausi</string>
 
+    <string name="settings_errors_errorDialog_title">Virhe</string>
     <string name="settings_errors_connectionError">Virhe Internet-yhteydessä palveluun yhdistettäessä.</string>
     <string name="settings_errors_apiErrorPrefix">Virhe:</string>
     <string name="settings_errors_unexpectedError">Tapahtui odottamaton virhe.</string>

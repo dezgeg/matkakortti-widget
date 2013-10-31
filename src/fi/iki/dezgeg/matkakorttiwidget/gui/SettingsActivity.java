@@ -1,6 +1,8 @@
 package fi.iki.dezgeg.matkakorttiwidget.gui;
 
+import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -193,8 +195,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                 MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
 
                 fetchedCards = null;
-                EditTextPreference text = new EditTextPreference(SettingsActivity.this);
-                text.setEnabled(false);
+                Preference text = new Preference(SettingsActivity.this);
 
                 CharSequence escaped;
                 if (Utils.isConnectionProblemRelatedException(exc))
@@ -206,8 +207,27 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                     escaped = localize(R.string.settings_errors_unexpectedError);
                     Utils.reportException("SettingsActivity", exc);
                 }
-
                 text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
+
+                final CharSequence finalMsg = escaped;
+                text.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        new AlertDialog.Builder(SettingsActivity.this)
+                                .setCancelable(true)
+                                .setTitle(R.string.settings_errors_errorDialog_title)
+                                .setMessage(finalMsg)
+                                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int i) {
+                                        dialog.cancel();
+                                    }
+                                })
+                                .create().show();
+                        return true;
+                    }
+                });
+
                 getCardListPrefGroup().addPreference(text);
             }
             SettingsActivity.this.setProgressBarIndeterminateVisibility(false);
