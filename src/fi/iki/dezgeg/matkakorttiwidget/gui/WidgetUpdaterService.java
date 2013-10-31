@@ -12,6 +12,8 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,13 @@ public class WidgetUpdaterService extends IntentService
 {
     private boolean initialUpdate = true;
     private boolean validDataOnWidgets = false;
+    private static final BigDecimal HUNDRED = new BigDecimal(100);
+    public static final DecimalFormat FORMAT_TWO_DIGITS_AFTER_POINT = new DecimalFormat();
+    static {
+        FORMAT_TWO_DIGITS_AFTER_POINT.setMinimumFractionDigits(2);
+        FORMAT_TWO_DIGITS_AFTER_POINT.setMaximumFractionDigits(2);
+        FORMAT_TWO_DIGITS_AFTER_POINT.setGroupingUsed(false);
+    }
 
     public WidgetUpdaterService()
     {
@@ -116,11 +125,18 @@ public class WidgetUpdaterService extends IntentService
         // Show money  if: period NOT show OR the money is non-zero OR
         boolean showPeriod = !getBoolPref(prefs, widgetId, "autoHidePeriod", false) || c.getPeriodExpiryDate() != null;
 
+        String money;
+        if (c.getMoney().compareTo(HUNDRED) > 0)
+            money = c.getMoney().intValue() + "";
+        else
+            money = FORMAT_TWO_DIGITS_AFTER_POINT.format(c.getMoney());
+
         setTextOrHide(remoteViews, R.id.homescreen_money_container, R.id.homescreen_money_text,
-                c.getMoney() + "", true);
+                money, true);
 
         String periodEnd = "- - -";
         if (c.getPeriodExpiryDate() != null) {
+            remoteViews.setTextColor(R.id.homescreen_period_text, Color.WHITE);
             periodEnd = new SimpleDateFormat("dd.MM.").format(c.getPeriodExpiryDate()) + "";
         } else {
             remoteViews.setTextColor(R.id.homescreen_period_text, Color.GRAY);

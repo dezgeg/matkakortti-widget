@@ -266,7 +266,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             else
                 period = localize(R.string.settings_cardList_card_hasPeriod,
                         new SimpleDateFormat("dd.MM.yyyy").format(card.getPeriodExpiryDate()));
-            CharSequence money = localize(R.string.settings_cardList_card_hasMoney, card.getMoney());
+            CharSequence money = localize(R.string.settings_cardList_card_hasMoney,
+                    WidgetUpdaterService.FORMAT_TWO_DIGITS_AFTER_POINT.format(card.getMoney()));
             return money.toString() + " " + period;
         }
 
