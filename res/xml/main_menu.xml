@@ -36,4 +36,12 @@
         android:title="@string/settings_widgetPrefs_category">
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_infoCategory">
+        <Preference android:title="@string/settings_infoCategory_showAboutDialog">
+            <intent
+                android:action="fi.iki.dezgeg.matkakorttiwidget.SHOW_ABOUT_DIALOG"
+                android:targetPackage="fi.iki.dezgeg.matkakorttiwidget"
+                android:targetClass="fi.iki.dezgeg.matkakorttiwidget.gui.AboutAppActivity" />
+        </Preference>
+    </PreferenceCategory>
 </PreferenceScreen>

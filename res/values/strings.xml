@@ -2,6 +2,9 @@
 <resources>
     <string name="app_name">Matkakortti Widget</string>
 
+    <!-- About dialog -->
+    <string name="settings_aboutDialog_title">Tietoa Matkakortti Widgetistä</string>
+
     <!-- Settings -->
     <string name="settings_accInfo_category">Tunnuksen tiedot</string>
     <string name="settings_accInfo_username">Käyttäjätunnus</string>
@@ -19,6 +22,10 @@
     <string name="settings_widgetPrefs_autoHideMoney">Hide cash if period</string>
     <string name="settings_widgetPrefs_autoHidePeriod">Piilota kausi</string>
 
+    <string name="settings_infoCategory" >Lisätietoja</string>
+    <string name="settings_infoCategory_showAboutDialog" >Lisätietoa Matkakortti Widgetistä</string>
+
+    <!-- Error messages -->
     <string name="settings_errors_errorDialog_title">Virhe</string>
     <string name="settings_errors_connectionError">Virhe Internet-yhteydessä palveluun yhdistettäessä.</string>
     <string name="settings_errors_apiErrorPrefix">Virhe:</string>
@@ -28,4 +35,5 @@
     <string name="widget_loading">Ladataan&#8230;</string>
     <string name="widget_connection_error">Yhteys-&#10;virhe</string>
     <string name="widget_other_error">Tapahtui virhe.</string>
+
 </resources>

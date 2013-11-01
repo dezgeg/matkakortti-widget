@@ -25,7 +25,15 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".gui.WidgetUpdaterService"></service>
+        <activity
+            android:name=".gui.AboutAppActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="fi.iki.dezgeg.matkakorttiwidget.SHOW_ABOUT_DIALOG"/>
+            </intent-filter>
+        </activity>
+
+        <service android:name=".gui.WidgetUpdaterService"/>
         <receiver
             android:name=".gui.HomescreenWidgetProvider"
             android:label="Matkakortti Widget" >
