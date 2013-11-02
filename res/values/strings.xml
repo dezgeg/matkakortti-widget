@@ -19,9 +19,10 @@
     <string name="settings_cardList_card_hasPeriod">kautta %1$s asti.</string>
 
     <string name="settings_widgetPrefs_category">Widgetin ulkonäkö</string>
-    <string name="settings_widgetPrefs_showName">Näytä matkakortin nimi</string>
+    <string name="settings_widgetPrefs_showName_title">Näytä matkakortin nimi</string>
     <string name="settings_widgetPrefs_autoHideMoney">Hide cash if period</string>
-    <string name="settings_widgetPrefs_autoHidePeriod">Piilota kausi</string>
+    <string name="settings_widgetPrefs_autoHidePeriod_title">Piilota kausi tarvittaessa</string>
+    <string name="settings_widgetPrefs_autoHidePeriod_summary">Kautta ei näytetä jos kortilla ei ole kautta</string>
 
     <string name="settings_infoCategory" >Lisätietoja</string>
     <string name="settings_infoCategory_showAboutDialog" >Lisätietoa Matkakortti Widgetistä</string>

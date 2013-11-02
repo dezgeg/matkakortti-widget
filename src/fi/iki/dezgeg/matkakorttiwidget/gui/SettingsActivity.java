@@ -142,9 +142,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             boolean defaultValue = Boolean.valueOf(pair[1]);
 
             CheckBoxPreference pref = new CheckBoxPreference(this);
-            int resId = getResources().getIdentifier(PER_WIDGET_PREF_STRING_PREFIX + key,
+            int titleResId = getResources().getIdentifier(PER_WIDGET_PREF_STRING_PREFIX + key + "_title",
                     "string", "fi.iki.dezgeg.matkakorttiwidget");
-            pref.setTitle(localize(resId));
+            int summaryResId = getResources().getIdentifier(PER_WIDGET_PREF_STRING_PREFIX + key + "_summary",
+                    "string", "fi.iki.dezgeg.matkakorttiwidget");
+            pref.setTitle(localize(titleResId));
+            if (summaryResId > 0)
+                pref.setSummary(summaryResId);
+
             pref.setDefaultValue(defaultValue);
             pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
 
