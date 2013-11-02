@@ -283,7 +283,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                             exc.getMessage(); // TODO: escape
                 else {
                     escaped = localize(R.string.settings_errors_unexpectedError);
-                    Utils.reportException("SettingsActivity", exc);
+                    MatkakorttiWidgetApp.reportException("SettingsActivity", exc);
                 }
                 text.setTitle(Html.fromHtml("<font color='#FF0000'>" + escaped + "</font>"));
 

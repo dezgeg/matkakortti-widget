@@ -67,7 +67,7 @@ public class WidgetUpdaterService extends IntentService
             return;
         }
         if (internalError)
-            Utils.reportException("WidgetUpdaterService", err);
+            MatkakorttiWidgetApp.reportException("WidgetUpdaterService", err);
 
         updateWidgets(getApplicationContext(), new ArrayList<Card>(),
                 getResources().getText(R.string.widget_other_error));
