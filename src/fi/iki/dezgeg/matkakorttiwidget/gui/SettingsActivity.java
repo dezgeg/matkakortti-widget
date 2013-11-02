@@ -70,25 +70,24 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
     protected void onCreate(Bundle state) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(state);
 
+        setResult(RESULT_CANCELED);
         if (state != null) {
             lastCardListUpdate = state.getLong("lastCardListUpdate", 0);
             Card[] arr = (Card[]) state.getSerializable("cardList");
             if (arr != null)
                 fetchedCards = Arrays.asList(arr);
         }
-
-        isInitialConfigure = getIntent().getAction().equals(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
-        appWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
-            appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
-
-        d("SettingsActivity", "Launched for AppWidget " + appWidgetId + ", initial: " + isInitialConfigure);
-        setResult(RESULT_CANCELED);
 
         addPreferencesFromResource(R.xml.main_menu);
         PreferenceGroup perWidgetPrefs = (PreferenceGroup) findPreference("widgetPrefs");
@@ -134,6 +133,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     @Override
     protected void onResume() {
         super.onResume();
+
+        isInitialConfigure = getIntent().getAction().equals(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+        appWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
+            appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
+
+        d("SettingsActivity", "Launched for AppWidget " + appWidgetId + ", initial: " + isInitialConfigure);
+
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         for (String prefKey : PREF_KEYS)
             updatePrefTitle(getPreferenceScreen().getSharedPreferences(), prefKey);
