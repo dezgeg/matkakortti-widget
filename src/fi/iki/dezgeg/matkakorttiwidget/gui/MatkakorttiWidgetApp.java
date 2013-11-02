@@ -54,6 +54,9 @@ public class MatkakorttiWidgetApp extends Application {
                     new Card("Kautta", "c", BigDecimal.ZERO, new Date(113, 11, 28)),
                     new Card("Raha+Kausi", "d", new BigDecimal("99.99"), new Date()),
                     new Card("Paljon rahaa", "e", new BigDecimal("199.99"), null));
+        else if (DEBUG && username.equals("dezgege"))
+            return Arrays.asList();
+
         return new MatkakorttiApi(username, password).getCards();
     }
 

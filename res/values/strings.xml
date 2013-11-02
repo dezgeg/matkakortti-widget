@@ -29,8 +29,9 @@
     <!-- Error messages -->
     <string name="settings_errors_errorDialog_title">Virhe</string>
     <string name="settings_errors_connectionError">Virhe Internet-yhteydessä palveluun yhdistettäessä.</string>
-    <string name="settings_errors_apiErrorPrefix">Virhe:</string>
+    <string name="settings_errors_apiErrorPrefix"><!-- Empty for now --></string>
     <string name="settings_errors_unexpectedError">Tapahtui odottamaton virhe.</string>
+    <string name="settings_errors_accountHasNoCards">Tunnukselle ei ole lisätty yhtään matkakorttia.</string>
 
     <!-- Widget -->
     <string name="widget_loading">Ladataan&#8230;</string>

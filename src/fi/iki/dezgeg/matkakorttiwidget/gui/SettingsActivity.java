@@ -263,12 +263,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             super.onPostExecute(result);
             Exception exc = result.getException();
 
-            if (exc == null) {
+            if (exc == null && !result.getCardList().isEmpty()) {
                 lastCardListUpdate = new Date().getTime();
                 fetchedCards = result.getCardList();
                 WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
                 populateCardListPrefGroup();
             } else {
+                if (exc == null && result.getCardList().isEmpty())
+                    exc = new MatkakorttiException(localize(R.string.settings_errors_accountHasNoCards).toString(), false);
                 MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
 
                 lastCardListUpdate = 0;
@@ -305,7 +307,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                         return true;
                     }
                 });
-
+                getCardListPrefGroup().removeAll();
                 getCardListPrefGroup().addPreference(text);
             }
             SettingsActivity.this.setProgressBarIndeterminateVisibility(false);
