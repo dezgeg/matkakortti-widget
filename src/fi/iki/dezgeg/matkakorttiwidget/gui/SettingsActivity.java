@@ -209,9 +209,15 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            getCardListPrefGroup().removeAll();
+
             SettingsActivity.this.setProgressBarIndeterminate(true);
             SettingsActivity.this.setProgressBarIndeterminateVisibility(true);
+
+            getCardListPrefGroup().removeAll();
+            Preference text = new Preference(SettingsActivity.this);
+            text.setTitle(Html.fromHtml("<font color='#888888'>" + localize(R.string.settings_cardList_loading) + "</font>"));
+            getCardListPrefGroup().addPreference(text);
+
             d("FetchCardListTask", "Updater task starting...");
         }
 
@@ -237,6 +243,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             } else {
                 MatkakorttiException apiExc = exc instanceof MatkakorttiException ? (MatkakorttiException) exc : null;
 
+                lastCardListUpdate = 0;
                 fetchedCards = null;
                 Preference text = new Preference(SettingsActivity.this);
 
@@ -280,6 +287,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 
         private void populateCardListPrefGroup() {
             final PreferenceGroup cardListPrefGroup = getCardListPrefGroup();
+            cardListPrefGroup.removeAll();
 
             // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
             final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");

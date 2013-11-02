@@ -13,6 +13,7 @@
     <string name="settings_accInfo_registerLink_summary"></string>
 
     <string name="settings_cardList_category">Tunnuksella olevat matkakortit</string>
+    <string name="settings_cardList_loading">Ladataan...</string>
     <string name="settings_cardList_card_hasMoney">Arvoa %1$s &#x20ac;,</string>
     <string name="settings_cardList_card_noPeriod">ei kautta.</string>
     <string name="settings_cardList_card_hasPeriod">kautta %1$s asti.</string>
