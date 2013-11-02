@@ -17,16 +17,6 @@
             android:title="@string/settings_accInfo_registerLink_title"
             android:summary="@string/settings_accInfo_registerLink_summary"/>
     </PreferenceCategory>
-    <!-- The 'OK' button is added in a bit hacky way, test that scrolling still works -->
-    <!--
-        <Preference android:title="Filler"/>
-        <Preference android:title="Filler"/>
-        <Preference android:title="Filler"/>
-        <Preference android:title="Filler"/>
-        <Preference android:title="Filler"/>
-        <Preference android:title="Filler"/>
-        <Preference android:title="Filler"/>
-    -->
     <PreferenceCategory
             android:key="cardList"
             android:title="@string/settings_cardList_category">

@@ -127,8 +127,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         appWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
             appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
-
         d("SettingsActivity", "Launched for AppWidget " + appWidgetId + ", initial: " + isInitialConfigure);
+
+        if (!getPreferenceScreen().getSharedPreferences().getBoolean("disclaimerShown", false)) {
+            Intent show = new Intent("fi.iki.dezgeg.matkakorttiwidget.SHOW_ABOUT_DIALOG");
+            show.setClass(this, AboutAppActivity.class);
+            startActivity(show);
+        }
+
         PreferenceGroup perWidgetPrefs = (PreferenceGroup) findPreference("widgetPrefs");
         perWidgetPrefs.removeAll();
         for (String[] pair : PER_WIDGET_PREFS) {
@@ -143,6 +149,28 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
 
             perWidgetPrefs.addPreference(pref);
+        }
+        if (MatkakorttiWidgetApp.DEBUG) {
+            Preference forgetDisclaimerShown = new Preference(this);
+            forgetDisclaimerShown.setTitle("Forget disclaimer shown state");
+            forgetDisclaimerShown.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    getPreferenceScreen().getSharedPreferences().edit().remove("disclaimerShown").commit();
+                    return false;
+                }
+            });
+            perWidgetPrefs.addPreference(forgetDisclaimerShown);
+
+            Preference crashMe = new Preference(this);
+            crashMe.setTitle("Crash me");
+            crashMe.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    throw new RuntimeException("Crash me!");
+                }
+            });
+            perWidgetPrefs.addPreference(crashMe);
         }
 
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
