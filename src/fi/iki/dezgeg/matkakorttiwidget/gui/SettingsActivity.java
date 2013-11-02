@@ -20,6 +20,8 @@ import android.view.Window;
 import android.widget.ImageButton;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import fi.iki.dezgeg.matkakorttiwidget.R;
@@ -29,11 +31,14 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiException;
 import static android.util.Log.d;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+    private boolean isInitialConfigure;
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
-    private volatile List<Card> fetchedCards;
+    private List<Card> fetchedCards;
+    private long lastCardListUpdate;
     private FetchCardListTask fetchCardListTask;
 
+    private static final long MIN_UPDATE_INTERVAL_MS = 5 * 60 * 1000;
     private static final String[] PREF_KEYS = new String[]{"username", "password"};
 
     private static final String PER_WIDGET_PREF_STRING_PREFIX = "settings_widgetPrefs_";
@@ -41,6 +46,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             {"showName", "true"},
             {"autoHidePeriod", "false"},
     };
+
 
     private PreferenceGroup getCardListPrefGroup() {
         return (PreferenceGroup) findPreference("cardList");
@@ -57,16 +63,31 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("cardList", fetchedCards == null ? null : fetchedCards.toArray(new Card[0]));
+        outState.putLong("lastCardListUpdate", lastCardListUpdate);
+    }
+
+    @Override
+    protected void onCreate(Bundle state) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         requestWindowFeature(Window.FEATURE_PROGRESS);
-        super.onCreate(savedInstanceState);
+        super.onCreate(state);
 
+        if (state != null) {
+            lastCardListUpdate = state.getLong("lastCardListUpdate", 0);
+            Card[] arr = (Card[]) state.getSerializable("cardList");
+            if (arr != null)
+                fetchedCards = Arrays.asList(arr);
+        }
+
+        isInitialConfigure = getIntent().getAction().equals(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
         appWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
             appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
 
-        d("SettingsActivity", "Launched for AppWidget " + appWidgetId);
+        d("SettingsActivity", "Launched for AppWidget " + appWidgetId + ", initial: " + isInitialConfigure);
         setResult(RESULT_CANCELED);
 
         addPreferencesFromResource(R.xml.main_menu);
@@ -116,7 +137,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         for (String prefKey : PREF_KEYS)
             updatePrefTitle(getPreferenceScreen().getSharedPreferences(), prefKey);
-        updateCardList();
+        updateCardList(false);
         updateOkButtonEnabledState();
     }
 
@@ -133,19 +154,28 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         if (key.startsWith("widget_") && fetchedCards != null) {
             WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
         } else if (key.equals("username") || key.equals("password")) {
-                updateCardList();
+            updateCardList(true);
         }
 
         updateOkButtonEnabledState();
     }
 
-    private synchronized void updateCardList() {
-        if (loginDetailsFilledIn()) {
-            if (fetchCardListTask != null && fetchCardListTask.getStatus() != AsyncTask.Status.FINISHED)
-                fetchCardListTask.cancel(true);
-            fetchCardListTask = new FetchCardListTask();
-            fetchCardListTask.execute();
-        }
+    private synchronized void updateCardList(boolean cancelExisting) {
+        if (!loginDetailsFilledIn())
+            return;
+        boolean existing = fetchCardListTask != null &&
+                fetchCardListTask.getStatus() != AsyncTask.Status.FINISHED;
+        if (existing && !cancelExisting)
+            return;
+
+        long current = new Date().getTime();
+        if (!cancelExisting && (current - lastCardListUpdate) < MIN_UPDATE_INTERVAL_MS)
+            return;
+
+        if (existing)
+            fetchCardListTask.cancel(true);
+        fetchCardListTask = new FetchCardListTask();
+        fetchCardListTask.execute();
     }
 
     private void updatePrefTitle(SharedPreferences prefs, String key) {
@@ -171,6 +201,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             getCardListPrefGroup().removeAll();
             SettingsActivity.this.setProgressBarIndeterminate(true);
             SettingsActivity.this.setProgressBarIndeterminateVisibility(true);
+            d("FetchCardListTask", "Updater task starting...");
         }
 
         @Override
@@ -188,6 +219,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             Exception exc = result.getException();
 
             if (exc == null) {
+                lastCardListUpdate = new Date().getTime();
                 fetchedCards = result.getCardList();
                 WidgetUpdaterService.updateWidgets(getApplicationContext(), fetchedCards);
                 populateCardListPrefGroup();
@@ -232,6 +264,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             }
             SettingsActivity.this.setProgressBarIndeterminateVisibility(false);
             updateOkButtonEnabledState();
+            d("FetchCardListTask", "Updater task ended...");
         }
 
         private void populateCardListPrefGroup() {

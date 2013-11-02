@@ -1,9 +1,10 @@
 package fi.iki.dezgeg.matkakorttiwidget.matkakortti;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Card {
+public class Card implements Serializable {
     private String name;
     private String id;
 
