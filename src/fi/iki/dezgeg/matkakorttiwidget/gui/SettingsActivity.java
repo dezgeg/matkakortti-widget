@@ -90,20 +90,6 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         }
 
         addPreferencesFromResource(R.xml.main_menu);
-        PreferenceGroup perWidgetPrefs = (PreferenceGroup) findPreference("widgetPrefs");
-        for (String[] pair : PER_WIDGET_PREFS) {
-            String key = pair[0];
-            boolean defaultValue = Boolean.valueOf(pair[1]);
-
-            CheckBoxPreference pref = new CheckBoxPreference(this);
-            int resId = getResources().getIdentifier(PER_WIDGET_PREF_STRING_PREFIX + key,
-                    "string", "fi.iki.dezgeg.matkakorttiwidget");
-            pref.setTitle(localize(resId));
-            pref.setDefaultValue(defaultValue);
-            pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
-
-            perWidgetPrefs.addPreference(pref);
-        }
         setContentView(R.layout.settings_menu);
 
         findPreference("registerLink").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -121,7 +107,10 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                 Intent resultValue = new Intent();
                 resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
                 SettingsActivity.this.setResult(RESULT_OK, resultValue);
-                SettingsActivity.this.finish();
+                if (isInitialConfigure)
+                    SettingsActivity.this.finish();
+                else
+                    SettingsActivity.this.moveTaskToBack(true);
             }
         });
     }
@@ -140,6 +129,21 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             appWidgetId = getIntent().getIntExtra("EXTRA_APPWIDGET_ID", AppWidgetManager.INVALID_APPWIDGET_ID);
 
         d("SettingsActivity", "Launched for AppWidget " + appWidgetId + ", initial: " + isInitialConfigure);
+        PreferenceGroup perWidgetPrefs = (PreferenceGroup) findPreference("widgetPrefs");
+        perWidgetPrefs.removeAll();
+        for (String[] pair : PER_WIDGET_PREFS) {
+            String key = pair[0];
+            boolean defaultValue = Boolean.valueOf(pair[1]);
+
+            CheckBoxPreference pref = new CheckBoxPreference(this);
+            int resId = getResources().getIdentifier(PER_WIDGET_PREF_STRING_PREFIX + key,
+                    "string", "fi.iki.dezgeg.matkakorttiwidget");
+            pref.setTitle(localize(resId));
+            pref.setDefaultValue(defaultValue);
+            pref.setKey(Utils.prefKeyForWidgetId(appWidgetId, key));
+
+            perWidgetPrefs.addPreference(pref);
+        }
 
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         for (String prefKey : PREF_KEYS)
