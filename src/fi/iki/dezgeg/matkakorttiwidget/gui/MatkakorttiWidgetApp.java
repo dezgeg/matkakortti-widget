@@ -34,7 +34,7 @@ import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
 
 public class MatkakorttiWidgetApp extends Application {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     private static final String ERROR_REPORT_URL = "https://tmtynkky.users.cs.helsinki.fi/error.php";
     private static long MIN_REPORT_INTERVAL_MS = 24 * 3600 * 1000;
 

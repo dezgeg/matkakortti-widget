@@ -6,8 +6,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fi.iki.dezgeg.matkakorttiwidget"
-    android:versionCode="1"
-    android:versionName="0.0.1" >
+    android:versionCode="100"
+    android:versionName="1.0.0">
 
     <uses-sdk
         android:minSdkVersion="8"
