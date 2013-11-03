@@ -41,9 +41,9 @@
             android:maxWidth="12dp"
             android:adjustViewBounds="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="4dp"
+            android:layout_marginLeft="3dp"
             android:layout_marginRight="4dp"
-            android:layout_marginTop="1dp" />
+            android:layout_marginTop="0dp" />
 
         <TextView
             android:id="@+id/homescreen_money_text"
@@ -53,7 +53,8 @@
             android:singleLine="true"
             android:textSize="@dimen/homescreen_value_size"
             android:text="1234567890"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:ellipsize="none" />
     </LinearLayout>
 
     <LinearLayout
@@ -71,9 +72,9 @@
             android:maxWidth="12dp"
             android:adjustViewBounds="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="4dp"
+            android:layout_marginLeft="3dp"
             android:layout_marginRight="4dp"
-            android:layout_marginTop="1dp" />
+            android:layout_marginTop="0dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -83,7 +84,8 @@
             android:textColor="#ffffff"
             android:singleLine="true"
             android:textSize="@dimen/homescreen_value_size"
-            android:text="1234567890" />
+            android:text="1234567890"
+            android:ellipsize="none" />
     </LinearLayout>
 
 </LinearLayout>

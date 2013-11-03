@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="homescreen_value_size">18dp</dimen>
+    <dimen name="homescreen_value_size">16dp</dimen>
     <dimen name="homescreen_name_size">11dp</dimen>
 </resources>
