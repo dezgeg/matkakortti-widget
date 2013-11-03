@@ -41,7 +41,7 @@
 
     <!-- Widget -->
     <string name="widget_loading">Ladataan&#8230;</string>
-    <string name="widget_connection_error">Yhteys-&#10;virhe</string>
+    <string name="widget_connection_error">Yhteys-\nvirhe</string>
     <string name="widget_other_error">Tapahtui virhe.</string>
 
 </resources>
