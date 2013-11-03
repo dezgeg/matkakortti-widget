@@ -33,6 +33,7 @@
             <version>0.11.0</version>
         </dependency>
     </dependencies>
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <sourceDirectory>src</sourceDirectory>
@@ -60,5 +61,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <android.release>true</android.release>
+                <android.sign.debug>false</android.sign.debug>
+            </properties>
+        </profile>
+    </profiles>
 </project>
 
