@@ -1,4 +1,7 @@
 #!/bin/bash
+# Matkakortti Widget is licensed under GPLv2.
+# See LICENSE.txt for more information.
+
 cd "$(dirname $0)"
 
 echo "AndroidManifest.xml:"

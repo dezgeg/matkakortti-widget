@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Matkakortti Widget is licensed under GPLv2.
+  ~ See LICENSE.txt for more information.
+  -->
+
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:configure="fi.iki.dezgeg.matkakorttiwidget.gui.SettingsActivity"
     android:updatePeriodMillis="18400000"

@@ -1,4 +1,7 @@
 #!/bin/bash -e
+# Matkakortti Widget is licensed under GPLv2.
+# See LICENSE.txt for more information.
+
 cd $(dirname $0)/res/drawable
 
 make_icon() {

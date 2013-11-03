@@ -1,3 +1,8 @@
+/*
+ * Matkakortti Widget is licensed under GPLv2.
+ * See LICENSE.txt for more information.
+ */
+
 package fi.iki.dezgeg.matkakorttiwidget.gui;
 
 import android.app.Application;

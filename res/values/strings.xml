@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Matkakortti Widget is licensed under GPLv2.
+  ~ See LICENSE.txt for more information.
+  -->
+
 <resources>
     <string name="app_name">Matkakortti Widget</string>
 
