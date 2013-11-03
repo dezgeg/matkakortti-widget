@@ -14,8 +14,9 @@
         just no way to easily style a WebView to match the current native theme.
         Let's just make the WebView transparent in code and hardcode white here,
         hopefully the fallback theme usually has dark background if Holo is not available...
+        Well, shit. ICS defaults to white background at least on the emulator. FUCK EVERYTHING!.
         */
-        body { color: white; }
+        body { color: #aaaaaa; }
         a {
             white-space: nowrap;
             color: #33b5e5;
