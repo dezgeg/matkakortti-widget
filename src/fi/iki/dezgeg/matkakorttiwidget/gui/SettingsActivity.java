@@ -58,7 +58,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     }
 
     private void updateOkButtonEnabledState() {
-        boolean enable = loginDetailsFilledIn() && fetchedCards != null && !fetchedCards.isEmpty();
+        boolean enable = !isInitialConfigure ||
+                (loginDetailsFilledIn() && fetchedCards != null && !fetchedCards.isEmpty());
         findViewById(R.id.settings_ok_button).setEnabled(enable);
     }
 
@@ -72,6 +73,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        d("SettingsActivity", "onNewIntent: " + intent.toString());
         setIntent(intent);
     }
 
@@ -81,6 +83,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(state);
 
+        d("SettingsActivity", "onCreate");
         setResult(RESULT_CANCELED);
         if (state != null) {
             lastCardListUpdate = state.getLong("lastCardListUpdate", 0);
@@ -134,6 +137,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             show.setClass(this, AboutAppActivity.class);
             startActivity(show);
         }
+        populateCardListPrefGroup();
 
         PreferenceGroup perWidgetPrefs = (PreferenceGroup) findPreference("widgetPrefs");
         perWidgetPrefs.removeAll();
@@ -236,6 +240,73 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         }
     }
 
+    private void setSelectedCardForThisWidget(String cardId, String thisWidgetKey) {
+        SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
+        editor.putString(thisWidgetKey, cardId).commit();
+        d("SettingsActivity", thisWidgetKey + " setting changing to " + cardId);
+    }
+
+    private void populateCardListPrefGroup() {
+        if (fetchedCards == null)
+            return;
+
+        final PreferenceGroup cardListPrefGroup = getCardListPrefGroup();
+        cardListPrefGroup.removeAll();
+
+        // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
+        final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");
+        String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
+        boolean foundSelected = false;
+        for (final Card card : fetchedCards) {
+            final CheckBoxPreference pref = new CheckBoxPreference(SettingsActivity.this);
+            pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
+            pref.setTitle(card.getName());
+            pref.setSummary(radioButtonSummaryForCard(card));
+            if (!foundSelected && card.getId().equals(selectedCardId)) {
+                pref.setChecked(true);
+                foundSelected = true;
+            }
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                // !!!!! When we are called, the box has already changed state.
+                @Override
+                public boolean onPreferenceClick(Preference unused) {
+                    // Trivial case: Un-checking the selected box, undo it.
+                    if (!pref.isChecked()) {
+                        pref.setChecked(true);
+                        return true;
+                    }
+                    // Clear all others...
+                    for (int i = 0; i < cardListPrefGroup.getPreferenceCount(); i++) {
+                        CheckBoxPreference cp = ((CheckBoxPreference) cardListPrefGroup.getPreference(i));
+                        cp.setChecked(false);
+                    }
+                    pref.setChecked(true); // ...but not this one.
+
+                    setSelectedCardForThisWidget(card.getId(), Utils.prefKeyForWidgetId(appWidgetId, "cardSelected"));
+                    return true;
+                }
+            });
+            cardListPrefGroup.addPreference(pref);
+        }
+
+        if (!foundSelected && cardListPrefGroup.getPreferenceCount() > 0) {
+            setSelectedCardForThisWidget(fetchedCards.get(0).getId(), thisWidgetKey);
+            ((CheckBoxPreference) cardListPrefGroup.getPreference(0)).setChecked(true);
+        }
+    }
+
+    private CharSequence radioButtonSummaryForCard(Card card) {
+        CharSequence period;
+        if (card.getPeriodExpiryDate() == null)
+            period = localize(R.string.settings_cardList_card_noPeriod);
+        else
+            period = localize(R.string.settings_cardList_card_hasPeriod,
+                    new SimpleDateFormat("dd.MM.yyyy").format(card.getPeriodExpiryDate()));
+        CharSequence money = localize(R.string.settings_cardList_card_hasMoney,
+                WidgetUpdaterService.FORMAT_TWO_DIGITS_AFTER_POINT.format(card.getMoney()));
+        return money.toString() + " " + period;
+    }
+
     // Helper classes
     private class FetchCardListTask extends AsyncTask<Void, Void, MatkakorttiApiResult> {
 
@@ -320,69 +391,6 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
             d("FetchCardListTask", "Updater task ended...");
         }
 
-        private void populateCardListPrefGroup() {
-            final PreferenceGroup cardListPrefGroup = getCardListPrefGroup();
-            cardListPrefGroup.removeAll();
-
-            // Uh oh. Simulate radio buttons with checkboxes since there is no RadioButtonPreference.
-            final String thisWidgetKey = Utils.prefKeyForWidgetId(appWidgetId, "cardSelected");
-            String selectedCardId = getPreferenceScreen().getSharedPreferences().getString(thisWidgetKey, "");
-            boolean foundSelected = false;
-            for (final Card card : fetchedCards) {
-                final CheckBoxPreference pref = new CheckBoxPreference(SettingsActivity.this);
-                pref.setWidgetLayoutResource(R.layout.radiobutton_preference);
-                pref.setTitle(card.getName());
-                pref.setSummary(radioButtonSummaryForCard(card));
-                if (!foundSelected && card.getId().equals(selectedCardId)) {
-                    pref.setChecked(true);
-                    foundSelected = true;
-                }
-                pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    // !!!!! When we are called, the box has already changed state.
-                    @Override
-                    public boolean onPreferenceClick(Preference unused) {
-                        // Trivial case: Un-checking the selected box, undo it.
-                        if (!pref.isChecked()) {
-                            pref.setChecked(true);
-                            return true;
-                        }
-                        // Clear all others...
-                        for (int i = 0; i < cardListPrefGroup.getPreferenceCount(); i++) {
-                            CheckBoxPreference cp = ((CheckBoxPreference) cardListPrefGroup.getPreference(i));
-                            cp.setChecked(false);
-                        }
-                        pref.setChecked(true); // ...but not this one.
-
-                        setSelectedCardForThisWidget(card.getId(), thisWidgetKey);
-                        return true;
-                    }
-                });
-                cardListPrefGroup.addPreference(pref);
-            }
-
-            if (!foundSelected && cardListPrefGroup.getPreferenceCount() > 0) {
-                setSelectedCardForThisWidget(fetchedCards.get(0).getId(), thisWidgetKey);
-                ((CheckBoxPreference) cardListPrefGroup.getPreference(0)).setChecked(true);
-            }
-        }
-
-        private CharSequence radioButtonSummaryForCard(Card card) {
-            CharSequence period;
-            if (card.getPeriodExpiryDate() == null)
-                period = localize(R.string.settings_cardList_card_noPeriod);
-            else
-                period = localize(R.string.settings_cardList_card_hasPeriod,
-                        new SimpleDateFormat("dd.MM.yyyy").format(card.getPeriodExpiryDate()));
-            CharSequence money = localize(R.string.settings_cardList_card_hasMoney,
-                    WidgetUpdaterService.FORMAT_TWO_DIGITS_AFTER_POINT.format(card.getMoney()));
-            return money.toString() + " " + period;
-        }
-
-        private void setSelectedCardForThisWidget(String cardId, String thisWidgetKey) {
-            SharedPreferences.Editor editor = getPreferenceScreen().getSharedPreferences().edit();
-            editor.putString(thisWidgetKey, cardId).commit();
-            d("SettingsActivity", thisWidgetKey + " setting changing to " + cardId);
-        }
     }
 
     static class MatkakorttiApiResult {
