@@ -22,26 +22,24 @@ import fi.iki.dezgeg.matkakorttiwidget.R;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiException;
 
-public class WidgetUpdaterService extends IntentService
-{
+public class WidgetUpdaterService extends IntentService {
     private boolean initialUpdate = true;
     private boolean validDataOnWidgets = false;
     private static final BigDecimal HUNDRED = new BigDecimal(100);
     public static final DecimalFormat FORMAT_TWO_DIGITS_AFTER_POINT = new DecimalFormat();
+
     static {
         FORMAT_TWO_DIGITS_AFTER_POINT.setMinimumFractionDigits(2);
         FORMAT_TWO_DIGITS_AFTER_POINT.setMaximumFractionDigits(2);
         FORMAT_TWO_DIGITS_AFTER_POINT.setGroupingUsed(false);
     }
 
-    public WidgetUpdaterService()
-    {
+    public WidgetUpdaterService() {
         super("MatkakorttiWidgetUpdaterService");
     }
 
     @Override
-    public void onHandleIntent(Intent source)
-    {
+    public void onHandleIntent(Intent source) {
         if (initialUpdate) {
             initialUpdate = false;
             updateWidgets(getApplicationContext(), new ArrayList<Card>(),

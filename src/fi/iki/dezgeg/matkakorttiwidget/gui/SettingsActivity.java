@@ -104,7 +104,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                 return true;
             }
         });
-        ((ImageButton)findViewById(R.id.settings_ok_button)).setOnClickListener(new View.OnClickListener() {
+        ((ImageButton) findViewById(R.id.settings_ok_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent resultValue = new Intent();

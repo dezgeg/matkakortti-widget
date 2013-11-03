@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="prefs">
-    <PreferenceCategory
-        android:title="@string/settings_accInfo_category">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="prefs">
+    <PreferenceCategory android:title="@string/settings_accInfo_category">
         <EditTextPreference
-                android:title="@string/settings_accInfo_username"
-                android:key="username"
-                android:singleLine="true"
-                android:inputType="textVisiblePassword|textNoSuggestions"/>
+            android:title="@string/settings_accInfo_username"
+            android:key="username"
+            android:singleLine="true"
+            android:inputType="textVisiblePassword|textNoSuggestions" />
         <EditTextPreference
-                android:title="@string/settings_accInfo_password"
-                android:key="password"
-                android:singleLine="true"
-                android:inputType="textPassword" />
+            android:title="@string/settings_accInfo_password"
+            android:key="password"
+            android:singleLine="true"
+            android:inputType="textPassword" />
         <Preference
             android:key="registerLink"
             android:title="@string/settings_accInfo_registerLink_title"
-            android:summary="@string/settings_accInfo_registerLink_summary"/>
+            android:summary="@string/settings_accInfo_registerLink_summary" />
     </PreferenceCategory>
     <PreferenceCategory
-            android:key="cardList"
-            android:title="@string/settings_cardList_category">
-    </PreferenceCategory>
+        android:key="cardList"
+        android:title="@string/settings_cardList_category"></PreferenceCategory>
     <PreferenceCategory
         android:key="widgetPrefs"
         android:title="@string/settings_widgetPrefs_category">

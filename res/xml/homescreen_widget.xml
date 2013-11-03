@@ -4,5 +4,4 @@
     android:updatePeriodMillis="18400000"
     android:initialLayout="@layout/homescreen_widget_warning"
     android:minHeight="40.0dp"
-    android:minWidth="40.0dp">
-</appwidget-provider>
+    android:minWidth="40.0dp" />

@@ -24,8 +24,8 @@
     <string name="settings_widgetPrefs_autoHidePeriod_title">Piilota kausi tarvittaessa</string>
     <string name="settings_widgetPrefs_autoHidePeriod_summary">Kautta ei näytetä jos kortilla ei ole kautta</string>
 
-    <string name="settings_infoCategory" >Lisätietoja</string>
-    <string name="settings_infoCategory_showAboutDialog" >Lisätietoa Matkakortti Widgetistä</string>
+    <string name="settings_infoCategory">Lisätietoja</string>
+    <string name="settings_infoCategory_showAboutDialog">Lisätietoa Matkakortti Widgetistä</string>
 
     <!-- Error messages -->
     <string name="settings_errors_errorDialog_title">Virhe</string>

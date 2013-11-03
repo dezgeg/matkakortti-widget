@@ -48,8 +48,7 @@
             android:singleLine="true"
             android:textSize="@dimen/homescreen_value_size"
             android:text="1234567890"
-            android:layout_gravity="center_vertical">
-        </TextView>
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
     <LinearLayout

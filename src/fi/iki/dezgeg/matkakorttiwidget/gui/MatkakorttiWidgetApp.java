@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.Card;
 import fi.iki.dezgeg.matkakorttiwidget.matkakortti.MatkakorttiApi;
@@ -92,7 +90,7 @@ public class MatkakorttiWidgetApp extends Application {
             return null;
         prefs.edit().putLong("lastErrorReport", new Date().getTime()).commit();
 
-       return new AsyncTask<Void, Void, Void>() {
+        return new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
